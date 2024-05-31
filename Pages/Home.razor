@@ -4,4 +4,60 @@
 
 <h1>Hello, world!</h1>
 
-Welcome to your new app.
+@if (!IsLoggedIn)
+{
+
+<div class="container text-center">
+  <div class="row">
+    <div class="col">
+      
+    </div>
+    <div class="col">
+      
+    <h3>Login</h3>
+    <div>
+        <div style="text-align: center;">
+            <label for="username">Username:</label>
+            <input type="text" id="username" @bind="Username" />
+        </div>
+    </div>
+    <div>
+        <label for="password">Password:</label>
+        <input type="password" id="password" @bind="Password" />
+    </div>
+    <button @onclick="Login">Login</button>
+    </div>
+    <div class="col">
+      
+    </div>
+  </div>
+</div>
+
+}
+else
+{
+    <h3>Welcome, @Username!</h3>
+    <button @onclick="Logout">Logout</button>
+}
+
+@code {
+    private string Username { get; set; }
+    private string Password { get; set; }
+    private bool IsLoggedIn { get; set; }
+
+    private void Login()
+    {
+        // Perform login logic here
+        // For simplicity, let's assume the login is successful
+        IsLoggedIn = true;
+    }
+
+    private void Logout()
+    {
+        // Perform logout logic here
+        // For simplicity, let's assume the logout is successful
+        IsLoggedIn = false;
+        Username = string.Empty;
+        Password = string.Empty;
+    }
+}

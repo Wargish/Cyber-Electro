@@ -2059,19 +2059,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Patricio\\.nuget\\packages\\": {}
+    "C:\\Users\\varas\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Patricio\\RiderProjects\\Cyber-Electro\\Cyber-Electro.csproj",
+      "projectUniqueName": "C:\\Users\\varas\\Documents\\GitHub\\Cyber-Electro\\Cyber-Electro.csproj",
       "projectName": "Cyber-Electro",
-      "projectPath": "C:\\Users\\Patricio\\RiderProjects\\Cyber-Electro\\Cyber-Electro.csproj",
-      "packagesPath": "C:\\Users\\Patricio\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Patricio\\RiderProjects\\Cyber-Electro\\obj\\",
+      "projectPath": "C:\\Users\\varas\\Documents\\GitHub\\Cyber-Electro\\Cyber-Electro.csproj",
+      "packagesPath": "C:\\Users\\varas\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\varas\\Documents\\GitHub\\Cyber-Electro\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Patricio\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\varas\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -2092,6 +2092,11 @@
         "warnAsError": [
           "NU1605"
         ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
       }
     },
     "frameworks": {
@@ -2131,6 +2136,12 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
+        "downloadDependencies": [
+          {
+            "name": "Microsoft.NETCore.App.Runtime.Mono.browser-wasm",
+            "version": "[8.0.5, 8.0.5]"
+          }
+        ],
         "frameworkReferences": {
           "Microsoft.NETCore.App": {
             "privateAssets": "all"
