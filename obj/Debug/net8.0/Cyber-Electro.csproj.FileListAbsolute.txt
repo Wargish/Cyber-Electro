@@ -1032,6 +1032,7 @@ C:\Users\varas\Documents\GitHub\Cyber-Electro\obj\Debug\net8.0\refint\Cyber-Elec
 C:\Users\varas\Documents\GitHub\Cyber-Electro\obj\Debug\net8.0\Cyber-Electro.pdb
 C:\Users\varas\Documents\GitHub\Cyber-Electro\obj\Debug\net8.0\ref\Cyber-Electro.dll
 =======
+>>>>>>> Stashed changes
 C:\Users\varas\Documents\Nueva carpeta\Cyber-Electro\bin\Debug\net8.0\wwwroot\_framework\blazor.boot.json
 C:\Users\varas\Documents\Nueva carpeta\Cyber-Electro\bin\Debug\net8.0\wwwroot\_framework\blazor.webassembly.js
 C:\Users\varas\Documents\Nueva carpeta\Cyber-Electro\bin\Debug\net8.0\wwwroot\_framework\Cyber-Electro.pdb
@@ -2064,4 +2065,3 @@ C:\Users\varas\Documents\Nueva carpeta\Cyber-Electro\obj\Debug\net8.0\Cyber-Elec
 C:\Users\varas\Documents\Nueva carpeta\Cyber-Electro\obj\Debug\net8.0\refint\Cyber-Electro.dll
 C:\Users\varas\Documents\Nueva carpeta\Cyber-Electro\obj\Debug\net8.0\Cyber-Electro.pdb
 C:\Users\varas\Documents\Nueva carpeta\Cyber-Electro\obj\Debug\net8.0\ref\Cyber-Electro.dll
->>>>>>> Stashed changes

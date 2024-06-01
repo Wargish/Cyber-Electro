@@ -1,6 +1,6 @@
-@page "/login"
-@inject NavigationManager NavigationManager
-<PageTitle>Home</PageTitle>
+@page "/registro"
+
+<PageTitle>Registro</PageTitle>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 <link rel="stylesheet" href="/css/Logincss.css"/>
@@ -12,21 +12,18 @@
     <div class="container" id="container">
         <div class="form-container sign-in">
             <form>
-                <h1>Iniciar Sesion</h1>                
+                <h1>Registro</h1>  
+                <input type="text" placeholder="Nombre">             
                 <input type="email" placeholder="Email">
                 <input type="password" placeholder="Contraseña">
-                <a href="#">Olvidaste tu contraseña?</a>
-                <button>Iniciar</button>
+                <button>registrar</button>
             </form>
         </div>
         <div class="toggle-container">
             <div class="toggle">
                 <div class="toggle-panel toggle-right">
                     <img src="/login2.jpg" alt="Image" class="imagenlogologin" />
-                    <h1>Bienvenido!</h1>
-                    <p>Registrate apretando aqui abajo!</p>
-                    <button class="hidden" id="register" @onclick="registro">REGISTRARSE</button>
-                </div>
+      </div>
             </div>
         </div>
     </div>
@@ -39,10 +36,6 @@
     private string Password { get; set; }
     private bool IsLoggedIn { get; set; }
 
-    private void registro()
-    {
-        NavigationManager.NavigateTo("/registro");
-    }
     private void login()
     {
         // Perform login logic here

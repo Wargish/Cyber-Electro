@@ -1,14 +1,8 @@
 {
   "version": 2,
-<<<<<<< Updated upstream
-  "dgSpecHash": "K/aSSDi3gtY=",
-  "success": true,
-  "projectFilePath": "C:\\Users\\varas\\Documents\\GitHub\\Cyber-Electro\\Cyber-Electro.csproj",
-=======
   "dgSpecHash": "PTbXTcFLjUE=",
   "success": true,
   "projectFilePath": "C:\\Users\\varas\\Documents\\Nueva carpeta\\Cyber-Electro\\Cyber-Electro.csproj",
->>>>>>> Stashed changes
   "expectedPackageFiles": [
     "C:\\Users\\varas\\.nuget\\packages\\microsoft.aspnetcore.authorization\\8.0.5\\microsoft.aspnetcore.authorization.8.0.5.nupkg.sha512",
     "C:\\Users\\varas\\.nuget\\packages\\microsoft.aspnetcore.components\\8.0.5\\microsoft.aspnetcore.components.8.0.5.nupkg.sha512",
@@ -41,5 +35,12 @@
     "C:\\Users\\varas\\.nuget\\packages\\system.text.json\\8.0.0\\system.text.json.8.0.0.nupkg.sha512",
     "C:\\Users\\varas\\.nuget\\packages\\microsoft.netcore.app.runtime.mono.browser-wasm\\8.0.5\\microsoft.netcore.app.runtime.mono.browser-wasm.8.0.5.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "Undefined",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Problem reading the cache file C:\\Users\\varas\\Documents\\Nueva carpeta\\Cyber-Electro\\obj\\project.nuget.cache : Invalid property identifier character: <. Path 'version', line 3, position 0."
+    }
+  ]
 }

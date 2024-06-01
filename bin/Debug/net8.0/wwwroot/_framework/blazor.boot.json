@@ -1,11 +1,7 @@
 {
   "mainAssemblyName": "Cyber-Electro",
   "resources": {
-<<<<<<< Updated upstream
-    "hash": "sha256-MutG3F9O8BOy1r36Q/CYTspxE2KXmDHI96IvveAU9GU=",
-=======
-    "hash": "sha256-/i+7Z+cMmqzymE1RrjU+n8nCVQICCYTcDDZCZ3Vhye8=",
->>>>>>> Stashed changes
+    "hash": "sha256-I076Trx2IphW+cCaef/q8I1ntcKzRFhPoW2+JFWgS5Q=",
     "jsModuleNative": {
       "dotnet.native.8.0.5.c971hn1hno.js": "sha256-boyHe+0RMZDkzBKGhsrnXPhPg3oZ6UqJnTUzngJPjNY="
     },
@@ -212,17 +208,10 @@
       "mscorlib.wasm": "sha256-XvLAB5IyfVSmj5aaGnPwgVFaaZz8jXmbN8WmeopiPBM=",
       "netstandard.wasm": "sha256-TbMssdnuTiKq1gjTPkpgROAuWN0uhvPnagvWR+wAgNs=",
       "System.Private.CoreLib.wasm": "sha256-sscg+Efk8ROPq+q4IVmhShzITuoOYvB8Bsc+Mp9vcSM=",
-<<<<<<< Updated upstream
-      "Cyber-Electro.wasm": "sha256-mKDoGXHhYH2aTewrVf8s1riqrOX7bUfN36pxb1qqlXo="
+      "Cyber-Electro.wasm": "sha256-yqm3ujIzE7WnY1FOnNjc84TNMv1pkenLkRsnlwikW8g="
     },
     "pdb": {
-      "Cyber-Electro.pdb": "sha256-gGCebVe4Wp8Ms4od4PdXTOrzjAFYVYJArhqsHItpgO0="
-=======
-      "Cyber-Electro.wasm": "sha256-sazGAxnzUFF/TzVUYbnPHc8jtXLRzZByneT7Dvq4gQw="
-    },
-    "pdb": {
-      "Cyber-Electro.pdb": "sha256-TNZVISItYIeQL2EqJ0lAwRYLb1FIzlXw4dxJoGKBoHA="
->>>>>>> Stashed changes
+      "Cyber-Electro.pdb": "sha256-uo2tNMA6z0hmhoBK+dV9bwX71xsBwRzFpoqdNdKmCF8="
     }
   },
   "cacheBootResources": true,
