@@ -1,8 +1,14 @@
 {
   "version": 2,
+<<<<<<< Updated upstream
   "dgSpecHash": "K/aSSDi3gtY=",
   "success": true,
   "projectFilePath": "C:\\Users\\varas\\Documents\\GitHub\\Cyber-Electro\\Cyber-Electro.csproj",
+=======
+  "dgSpecHash": "PTbXTcFLjUE=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\varas\\Documents\\Nueva carpeta\\Cyber-Electro\\Cyber-Electro.csproj",
+>>>>>>> Stashed changes
   "expectedPackageFiles": [
     "C:\\Users\\varas\\.nuget\\packages\\microsoft.aspnetcore.authorization\\8.0.5\\microsoft.aspnetcore.authorization.8.0.5.nupkg.sha512",
     "C:\\Users\\varas\\.nuget\\packages\\microsoft.aspnetcore.components\\8.0.5\\microsoft.aspnetcore.components.8.0.5.nupkg.sha512",

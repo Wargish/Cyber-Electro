@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Cyber-Electro")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+747e9d48ef6cc387f715955c2e0836dd13c92f13")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a2c3ce7ca50235cd17c70cc7253b35d9f42f9f1e")]
 [assembly: System.Reflection.AssemblyProductAttribute("Cyber-Electro")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Cyber-Electro")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

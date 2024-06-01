@@ -2064,11 +2064,19 @@
   "project": {
     "version": "1.0.0",
     "restore": {
+<<<<<<< Updated upstream
       "projectUniqueName": "C:\\Users\\varas\\Documents\\GitHub\\Cyber-Electro\\Cyber-Electro.csproj",
       "projectName": "Cyber-Electro",
       "projectPath": "C:\\Users\\varas\\Documents\\GitHub\\Cyber-Electro\\Cyber-Electro.csproj",
       "packagesPath": "C:\\Users\\varas\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\varas\\Documents\\GitHub\\Cyber-Electro\\obj\\",
+=======
+      "projectUniqueName": "C:\\Users\\varas\\Documents\\Nueva carpeta\\Cyber-Electro\\Cyber-Electro.csproj",
+      "projectName": "Cyber-Electro",
+      "projectPath": "C:\\Users\\varas\\Documents\\Nueva carpeta\\Cyber-Electro\\Cyber-Electro.csproj",
+      "packagesPath": "C:\\Users\\varas\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\varas\\Documents\\Nueva carpeta\\Cyber-Electro\\obj\\",
+>>>>>>> Stashed changes
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\varas\\AppData\\Roaming\\NuGet\\NuGet.Config",

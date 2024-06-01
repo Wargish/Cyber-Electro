@@ -1,4 +1,6 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@if (ShowNavMenu)
+{
+    <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">Cyber-Electro</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -32,6 +34,10 @@
     </nav>
 </div>
 
+}
+
+
+
 @code {
     private bool collapseNavMenu = true;
 
@@ -41,5 +47,7 @@
     {
         collapseNavMenu = !collapseNavMenu;
     }
+
+     public bool ShowNavMenu { get; set; } = true;
 
 }
