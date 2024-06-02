@@ -29,6 +29,10 @@
       "PackagePath": "staticwebassets\\css\\bootstrap\\bootstrap.min.css.map"
     },
     {
+      "Id": "C:\\Users\\varas\\Documents\\Nueva carpeta\\Cyber-Electro\\wwwroot\\css\\home.css",
+      "PackagePath": "staticwebassets\\css\\home.css"
+    },
+    {
       "Id": "C:\\Users\\varas\\Documents\\Nueva carpeta\\Cyber-Electro\\wwwroot\\favicon.png",
       "PackagePath": "staticwebassets\\favicon.png"
     },

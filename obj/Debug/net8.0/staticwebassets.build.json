@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "ChR1Wbr61Nh9ocvyhYig8jZGXPhrGGn7ysrv/Kapst4=",
+  "Hash": "50EQ3ZrhAPRAliabp2bhIyR8HsMRm8L+D9WebqjxRWg=",
   "Source": "Cyber-Electro",
   "BasePath": "/",
   "Mode": "Root",
@@ -7862,6 +7862,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\css\\bootstrap\\bootstrap.min.css.map"
+    },
+    {
+      "Identity": "C:\\Users\\varas\\Documents\\Nueva carpeta\\Cyber-Electro\\wwwroot\\css\\home.css",
+      "SourceId": "Cyber-Electro",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\varas\\Documents\\Nueva carpeta\\Cyber-Electro\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "css/home.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\css\\home.css"
     },
     {
       "Identity": "C:\\Users\\varas\\Documents\\Nueva carpeta\\Cyber-Electro\\wwwroot\\css\\Logincss.css",
