@@ -2,6 +2,61 @@
   "version": 3,
   "targets": {
     "net8.0": {
+      "Blazorise/1.5.2": {
+        "type": "package",
+        "dependencies": {
+          "Blazorise.Licensing": "1.2.0",
+          "Microsoft.AspNetCore.Components": "8.0.4",
+          "Microsoft.AspNetCore.Components.Web": "8.0.4",
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.1"
+        },
+        "compile": {
+          "lib/net8.0/Blazorise.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Blazorise.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/Blazorise.props": {}
+        },
+        "buildMultiTargeting": {
+          "buildMultiTargeting/Blazorise.props": {}
+        }
+      },
+      "Blazorise.Bootstrap/1.5.2": {
+        "type": "package",
+        "dependencies": {
+          "Blazorise": "1.5.2",
+          "Microsoft.AspNetCore.Components": "8.0.4",
+          "Microsoft.AspNetCore.Components.Web": "8.0.4",
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.1"
+        },
+        "compile": {
+          "lib/net8.0/Blazorise.Bootstrap.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0/Blazorise.Bootstrap.dll": {}
+        },
+        "build": {
+          "buildTransitive/Blazorise.Bootstrap.props": {}
+        },
+        "buildMultiTargeting": {
+          "buildMultiTargeting/Blazorise.Bootstrap.props": {}
+        }
+      },
+      "Blazorise.Licensing/1.2.0": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/Blazorise.Licensing.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0/Blazorise.Licensing.dll": {}
+        }
+      },
       "Microsoft.AspNetCore.Authorization/8.0.5": {
         "type": "package",
         "dependencies": {
@@ -494,6 +549,61 @@
       }
     },
     "net8.0/browser-wasm": {
+      "Blazorise/1.5.2": {
+        "type": "package",
+        "dependencies": {
+          "Blazorise.Licensing": "1.2.0",
+          "Microsoft.AspNetCore.Components": "8.0.4",
+          "Microsoft.AspNetCore.Components.Web": "8.0.4",
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.1"
+        },
+        "compile": {
+          "lib/net8.0/Blazorise.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Blazorise.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/Blazorise.props": {}
+        },
+        "buildMultiTargeting": {
+          "buildMultiTargeting/Blazorise.props": {}
+        }
+      },
+      "Blazorise.Bootstrap/1.5.2": {
+        "type": "package",
+        "dependencies": {
+          "Blazorise": "1.5.2",
+          "Microsoft.AspNetCore.Components": "8.0.4",
+          "Microsoft.AspNetCore.Components.Web": "8.0.4",
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.1"
+        },
+        "compile": {
+          "lib/net8.0/Blazorise.Bootstrap.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0/Blazorise.Bootstrap.dll": {}
+        },
+        "build": {
+          "buildTransitive/Blazorise.Bootstrap.props": {}
+        },
+        "buildMultiTargeting": {
+          "buildMultiTargeting/Blazorise.Bootstrap.props": {}
+        }
+      },
+      "Blazorise.Licensing/1.2.0": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/Blazorise.Licensing.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0/Blazorise.Licensing.dll": {}
+        }
+      },
       "Microsoft.AspNetCore.Authorization/8.0.5": {
         "type": "package",
         "dependencies": {
@@ -981,6 +1091,105 @@
     }
   },
   "libraries": {
+    "Blazorise/1.5.2": {
+      "sha512": "ky0LLAwwwBn7ogaAdJBXi/SMGeuFg6Q/0iLzdy91353zsDZ1gT0Qhc+qK0cosZf1v+o5ln1gUB8oke8fUF8OMA==",
+      "type": "package",
+      "path": "blazorise/1.5.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Blazorise.png",
+        "LICENSE.md",
+        "blazorise.1.5.2.nupkg.sha512",
+        "blazorise.nuspec",
+        "build/Blazorise.props",
+        "build/Microsoft.AspNetCore.StaticWebAssets.props",
+        "buildMultiTargeting/Blazorise.props",
+        "buildTransitive/Blazorise.props",
+        "lib/net6.0/Blazorise.dll",
+        "lib/net6.0/Blazorise.xml",
+        "lib/net7.0/Blazorise.dll",
+        "lib/net7.0/Blazorise.xml",
+        "lib/net8.0/Blazorise.dll",
+        "lib/net8.0/Blazorise.xml",
+        "staticwebassets/blazorise.css",
+        "staticwebassets/blazorise.min.css",
+        "staticwebassets/breakpoint.js",
+        "staticwebassets/button.js",
+        "staticwebassets/closable.js",
+        "staticwebassets/colorPicker.js",
+        "staticwebassets/datePicker.js",
+        "staticwebassets/dragDrop.js",
+        "staticwebassets/dropdown.js",
+        "staticwebassets/fileEdit.js",
+        "staticwebassets/filePicker.js",
+        "staticwebassets/floatingUi.js",
+        "staticwebassets/inputMask.js",
+        "staticwebassets/io.js",
+        "staticwebassets/memoEdit.js",
+        "staticwebassets/numericPicker.js",
+        "staticwebassets/observer.js",
+        "staticwebassets/table.js",
+        "staticwebassets/textEdit.js",
+        "staticwebassets/theme.js",
+        "staticwebassets/timePicker.js",
+        "staticwebassets/tooltip.js",
+        "staticwebassets/utilities.js",
+        "staticwebassets/validators/DateTimeMaskValidator.js",
+        "staticwebassets/validators/NoValidator.js",
+        "staticwebassets/validators/NumericMaskValidator.js",
+        "staticwebassets/validators/RegExMaskValidator.js",
+        "staticwebassets/vendors/Behave.js",
+        "staticwebassets/vendors/Pickr.js",
+        "staticwebassets/vendors/autoNumeric.js",
+        "staticwebassets/vendors/flatpickr.js",
+        "staticwebassets/vendors/floating-ui-core.js",
+        "staticwebassets/vendors/floating-ui.js",
+        "staticwebassets/vendors/inputmask.js",
+        "staticwebassets/vendors/jsencrypt.js",
+        "staticwebassets/vendors/sha512.js"
+      ]
+    },
+    "Blazorise.Bootstrap/1.5.2": {
+      "sha512": "7PX/fyg+RvcSGyEF1RvtLD44cjg8UvF9qubdUYxPfdpnYCIfiAUGCadaPubmOVlBrPCdUUFdMMzYRZoIaVSsPA==",
+      "type": "package",
+      "path": "blazorise.bootstrap/1.5.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Blazorise.png",
+        "LICENSE.md",
+        "blazorise.bootstrap.1.5.2.nupkg.sha512",
+        "blazorise.bootstrap.nuspec",
+        "build/Blazorise.Bootstrap.props",
+        "build/Microsoft.AspNetCore.StaticWebAssets.props",
+        "buildMultiTargeting/Blazorise.Bootstrap.props",
+        "buildTransitive/Blazorise.Bootstrap.props",
+        "lib/net6.0/Blazorise.Bootstrap.dll",
+        "lib/net7.0/Blazorise.Bootstrap.dll",
+        "lib/net8.0/Blazorise.Bootstrap.dll",
+        "staticwebassets/blazorise.bootstrap.css",
+        "staticwebassets/blazorise.bootstrap.min.css",
+        "staticwebassets/modal.js",
+        "staticwebassets/tooltip.js"
+      ]
+    },
+    "Blazorise.Licensing/1.2.0": {
+      "sha512": "h7jkAF+yyIKnUqFYivaxIySDma1zLV+0xcg52r2gIe772BLQWnBaANjpMBKXxRlYiEyOGPQWjMHJWs3dL/TgmA==",
+      "type": "package",
+      "path": "blazorise.licensing/1.2.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Blazorise.png",
+        "LICENSE.md",
+        "blazorise.licensing.1.2.0.nupkg.sha512",
+        "blazorise.licensing.nuspec",
+        "lib/net6.0/Blazorise.Licensing.dll",
+        "lib/net7.0/Blazorise.Licensing.dll",
+        "lib/net8.0/Blazorise.Licensing.dll"
+      ]
+    },
     "Microsoft.AspNetCore.Authorization/8.0.5": {
       "sha512": "vVx5fiR2ysWoZq1PcVkBdzw9g+E2gIPS26IvJslxnLapwXs4SXp+y5BbP4RSApOlQLTUeGL3TaG4y1Vt8V4eDA==",
       "type": "package",
@@ -2052,6 +2261,7 @@
   },
   "projectFileDependencyGroups": {
     "net8.0": [
+      "Blazorise.Bootstrap >= 1.5.2",
       "Microsoft.AspNetCore.Components.WebAssembly >= 8.0.5",
       "Microsoft.AspNetCore.Components.WebAssembly.DevServer >= 8.0.5",
       "Microsoft.NET.ILLink.Tasks >= 8.0.5",
@@ -2098,6 +2308,10 @@
       "net8.0": {
         "targetAlias": "net8.0",
         "dependencies": {
+          "Blazorise.Bootstrap": {
+            "target": "Package",
+            "version": "[1.5.2, )"
+          },
           "Microsoft.AspNetCore.Components.WebAssembly": {
             "target": "Package",
             "version": "[8.0.5, )"

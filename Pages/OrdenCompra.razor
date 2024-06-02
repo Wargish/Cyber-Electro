@@ -1,0 +1,134 @@
+﻿@page "/ordenCompra"
+@using System.ComponentModel.DataAnnotations
+<PageTitle>Orden de Compra</PageTitle>
+
+<h3>Orden de Compra</h3>
+
+<EditForm Model="@orden">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label>Fecha:</label>
+        <InputDate @bind-Value="orden.Fecha" />
+    </div>
+    <div>
+        <label>Número de Orden:</label>
+        <InputText @bind-Value="orden.NumeroOrden" />
+    </div>
+    <h4>Vendedor</h4>
+    <div>
+        <label>Nombre:</label>
+        <InputText @bind-Value="orden.Vendedor.Nombre" />
+    </div>
+    <h4>Cliente</h4>
+    <div>
+        <label>Nombre:</label>
+        <InputText @bind-Value="orden.Cliente.Nombre" />
+    </div>
+    <div>
+        <label>Dirección:</label>
+        <InputText @bind-Value="orden.Cliente.Direccion" />
+    </div>
+    <div>
+        <label>Teléfono:</label>
+        <InputText @bind-Value="orden.Cliente.Telefono" />
+    </div>
+    <div>
+        <label>Email:</label>
+        <InputText @bind-Value="orden.Cliente.Email" />
+    </div>
+    <h4>Artículos</h4>
+    @foreach (var articulo in orden.Articulos)
+    {
+    <div>
+        <label>Número:</label>
+        <InputNumber @bind-Value="articulo.Numero" />
+    </div>
+    <div>
+        <label>Descripción:</label>
+        <InputText @bind-Value="articulo.Descripcion" />
+    </div>
+    <div>
+        <label>Cantidad:</label>
+        <InputNumber @bind-Value="articulo.Cantidad" />
+    </div>
+    <div>
+        <label>Precio Unitario:</label>
+        <InputNumber @bind-Value="articulo.PrecioUnitario" />
+    </div>
+    <div>
+        <label>Total:</label>
+        <InputNumber Value="@(articulo.Total)" Disabled="true" />
+    </div>
+    }
+
+    <h4>Totales</h4>
+    <div>
+        <label>Subtotal:</label>
+        <InputNumber Value="@(orden.Subtotal)" Disabled="true" />
+    </div>
+    <div>
+        <label>IVA (21%):</label>
+        <InputNumber Value="@(orden.IVA)" Disabled="true" />
+    </div>
+    <div>
+        <label>Total:</label>
+        <InputNumber Value="@(orden.Total)" Disabled="true" />
+    </div>
+</EditForm>
+
+@code {
+    private Orden orden = new Orden
+    {
+        Fecha = DateTime.Now,
+        NumeroOrden = "OC-001",
+        Vendedor = new Vendedor(),
+        Cliente = new Cliente(),
+        Articulos = new List<Articulo>
+        {
+            new Articulo(),
+            new Articulo(),
+            new Articulo()
+        }
+    };
+
+    public class Orden
+    {
+        [Required]
+        public string NumeroOrden { get; set; }
+        [Required]
+        public DateTime Fecha { get; set; }
+        public Vendedor Vendedor { get; set; } = new Vendedor();
+        public Cliente Cliente { get; set; } = new Cliente();
+        public List<Articulo> Articulos { get; set; } = new List<Articulo>();
+        public decimal Subtotal => Articulos.Sum(a => a.Total);
+        public decimal IVA => Subtotal * 0.21m;
+        public decimal Total => Subtotal + IVA;
+    }
+
+    public class Vendedor
+    {
+        [Required]
+        public string Nombre { get; set; }
+    }
+    
+    public class Cliente
+    {
+        [Required]
+        public string Nombre { get; set; }
+        public string Direccion { get; set; }
+        public string Telefono { get; set; }
+        public string Email { get; set; }
+    }
+
+    public class Articulo
+    {
+        [Required] public int Numero { get; set; }
+        [Required] public string Descripcion { get; set; }
+        [Required] public int Cantidad { get; set; }
+        [Required] public decimal PrecioUnitario { get; set; }
+        public decimal Total => Cantidad * PrecioUnitario;
+    }
+
+}

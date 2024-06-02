@@ -1,9 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "4dmH1yDjRC0lGHGvjCRm+z/ID34WkIotvtu7sdHozZgObVXJBum2bKWmGH4Sk9g9zgexz6I2TYdE61FnmebrDA==",
+  "dgSpecHash": "+M0ny5TOJoI56doxZsewrm1ptXyH4jLFV6jiqoTxww9UE/aBjA/ohjI22zPRw4pl71A50q2PMAdkMm3Jxj5YXA==",
   "success": true,
   "projectFilePath": "C:\\Users\\Patricio\\RiderProjects\\Cyber-Electro\\Cyber-Electro.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\Patricio\\.nuget\\packages\\blazorise\\1.5.2\\blazorise.1.5.2.nupkg.sha512",
+    "C:\\Users\\Patricio\\.nuget\\packages\\blazorise.bootstrap\\1.5.2\\blazorise.bootstrap.1.5.2.nupkg.sha512",
+    "C:\\Users\\Patricio\\.nuget\\packages\\blazorise.licensing\\1.2.0\\blazorise.licensing.1.2.0.nupkg.sha512",
     "C:\\Users\\Patricio\\.nuget\\packages\\microsoft.aspnetcore.authorization\\8.0.5\\microsoft.aspnetcore.authorization.8.0.5.nupkg.sha512",
     "C:\\Users\\Patricio\\.nuget\\packages\\microsoft.aspnetcore.components\\8.0.5\\microsoft.aspnetcore.components.8.0.5.nupkg.sha512",
     "C:\\Users\\Patricio\\.nuget\\packages\\microsoft.aspnetcore.components.analyzers\\8.0.5\\microsoft.aspnetcore.components.analyzers.8.0.5.nupkg.sha512",
