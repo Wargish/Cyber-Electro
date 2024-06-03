@@ -1,0 +1,81 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\varas\\Documents\\Nueva carpeta\\Cyber-Electro\\bin\\Debug\\net8.0\\wwwroot\\_framework\\blazor.webassembly.js",
+      "PackagePath": "staticwebassets\\_framework\\blazor.webassembly.js"
+    },
+    {
+      "Id": "C:\\Users\\varas\\Documents\\Nueva carpeta\\Cyber-Electro\\obj\\Debug\\net8.0\\compressed\\us4t9i1pby.gz",
+      "PackagePath": "staticwebassets\\_framework\\blazor.webassembly.js.gz"
+    },
+    {
+      "Id": "C:\\Users\\varas\\Documents\\Nueva carpeta\\Cyber-Electro\\obj\\Debug\\net8.0\\scopedcss\\bundle\\Cyber-Electro.styles.css",
+      "PackagePath": "staticwebassets\\Cyber-Electro.styles.css"
+    },
+    {
+      "Id": "C:\\Users\\varas\\Documents\\Nueva carpeta\\Cyber-Electro\\wwwroot\\css\\Logincss.css",
+      "PackagePath": "staticwebassets\\css\\Logincss.css"
+    },
+    {
+      "Id": "C:\\Users\\varas\\Documents\\Nueva carpeta\\Cyber-Electro\\wwwroot\\css\\app.css",
+      "PackagePath": "staticwebassets\\css\\app.css"
+    },
+    {
+      "Id": "C:\\Users\\varas\\Documents\\Nueva carpeta\\Cyber-Electro\\wwwroot\\css\\bootstrap\\bootstrap.min.css",
+      "PackagePath": "staticwebassets\\css\\bootstrap\\bootstrap.min.css"
+    },
+    {
+      "Id": "C:\\Users\\varas\\Documents\\Nueva carpeta\\Cyber-Electro\\wwwroot\\css\\bootstrap\\bootstrap.min.css.map",
+      "PackagePath": "staticwebassets\\css\\bootstrap\\bootstrap.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\varas\\Documents\\Nueva carpeta\\Cyber-Electro\\wwwroot\\css\\home.css",
+      "PackagePath": "staticwebassets\\css\\home.css"
+    },
+    {
+      "Id": "C:\\Users\\varas\\Documents\\Nueva carpeta\\Cyber-Electro\\wwwroot\\favicon.png",
+      "PackagePath": "staticwebassets\\favicon.png"
+    },
+    {
+      "Id": "C:\\Users\\varas\\Documents\\Nueva carpeta\\Cyber-Electro\\wwwroot\\icon-192.png",
+      "PackagePath": "staticwebassets\\icon-192.png"
+    },
+    {
+      "Id": "C:\\Users\\varas\\Documents\\Nueva carpeta\\Cyber-Electro\\wwwroot\\index.html",
+      "PackagePath": "staticwebassets\\index.html"
+    },
+    {
+      "Id": "C:\\Users\\varas\\Documents\\Nueva carpeta\\Cyber-Electro\\wwwroot\\js\\script.js",
+      "PackagePath": "staticwebassets\\js\\script.js"
+    },
+    {
+      "Id": "C:\\Users\\varas\\Documents\\Nueva carpeta\\Cyber-Electro\\wwwroot\\login2.jpg",
+      "PackagePath": "staticwebassets\\login2.jpg"
+    },
+    {
+      "Id": "C:\\Users\\varas\\Documents\\Nueva carpeta\\Cyber-Electro\\wwwroot\\logocyber.jpg",
+      "PackagePath": "staticwebassets\\logocyber.jpg"
+    },
+    {
+      "Id": "C:\\Users\\varas\\Documents\\Nueva carpeta\\Cyber-Electro\\wwwroot\\sample-data\\weather.json",
+      "PackagePath": "staticwebassets\\sample-data\\weather.json"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.Cyber-Electro.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.Cyber-Electro.props",
+      "PackagePath": "build\\Cyber-Electro.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.Cyber-Electro.props",
+      "PackagePath": "buildMultiTargeting\\Cyber-Electro.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.Cyber-Electro.props",
+      "PackagePath": "buildTransitive\\Cyber-Electro.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

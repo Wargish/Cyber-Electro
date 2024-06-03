@@ -1,0 +1,61 @@
+@page "/login"
+@inject NavigationManager NavigationManager
+<PageTitle>Home</PageTitle>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<link rel="stylesheet" href="/css/Logincss.css"/>
+
+<img src="/fondoo.jpg" alt="Background Image" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; object-fit: cover;">
+
+@if (!IsLoggedIn)
+{
+    <div class="container" id="container">
+        <div class="form-container sign-in">
+            <form>
+                <h1>Iniciar Sesion</h1>                
+                <input type="email" placeholder="Email">
+                <input type="password" placeholder="Contraseña">
+                <a href="#">Olvidaste tu contraseña?</a>
+                <button>Iniciar</button>
+            </form>
+        </div>
+        <div class="toggle-container">
+            <div class="toggle">
+                <div class="toggle-panel toggle-right">
+                    <img src="/login2.jpg" alt="Image" class="imagenlogologin" />
+                    <h1>Bienvenido!</h1>
+                    <p>Registrate apretando aqui abajo!</p>
+                    <button class="hidden" id="register" @onclick="registro">REGISTRARSE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+}
+
+@code {
+    private string Username { get; set; }
+    private string Password { get; set; }
+    private bool IsLoggedIn { get; set; }
+
+    private void registro()
+    {
+        NavigationManager.NavigateTo("/registro");
+    }
+    private void login()
+    {
+        // Perform login logic here
+        // For simplicity, let's assume the login is successful
+        IsLoggedIn = true;
+    }
+
+    private void Logout()
+    {
+        // Perform logout logic here
+        // For simplicity, let's assume the logout is successful
+        IsLoggedIn = false;
+        Username = string.Empty;
+        Password = string.Empty;
+    }
+}
