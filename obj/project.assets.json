@@ -2064,11 +2064,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\varas\\Documents\\Nueva carpeta\\Cyber-Electro\\Cyber-Electro.csproj",
+      "projectUniqueName": "C:\\Users\\varas\\Documents\\CYBERRRRRRR\\Cyber-Electro\\Cyber-Electro.csproj",
       "projectName": "Cyber-Electro",
-      "projectPath": "C:\\Users\\varas\\Documents\\Nueva carpeta\\Cyber-Electro\\Cyber-Electro.csproj",
+      "projectPath": "C:\\Users\\varas\\Documents\\CYBERRRRRRR\\Cyber-Electro\\Cyber-Electro.csproj",
       "packagesPath": "C:\\Users\\varas\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\varas\\Documents\\Nueva carpeta\\Cyber-Electro\\obj\\",
+      "outputPath": "C:\\Users\\varas\\Documents\\CYBERRRRRRR\\Cyber-Electro\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\varas\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -2155,13 +2155,5 @@
         "#import": []
       }
     }
-  },
-  "logs": [
-    {
-      "code": "Undefined",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Problem reading the cache file C:\\Users\\varas\\Documents\\Nueva carpeta\\Cyber-Electro\\obj\\project.nuget.cache : Invalid property identifier character: <. Path 'version', line 3, position 0."
-    }
-  ]
+  }
 }

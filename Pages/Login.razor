@@ -1,4 +1,4 @@
-@page "/login"
+@page "/"
 @inject NavigationManager NavigationManager
 <PageTitle>Home</PageTitle>
 
@@ -7,17 +7,15 @@
 
 <img src="/fondoo.jpg" alt="Background Image" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; object-fit: cover;">
 
-@if (!IsLoggedIn)
-{
+
     <div class="container" id="container">
         <div class="form-container sign-in">
-            <form>
-                <h1>Iniciar Sesion</h1>                
-                <input type="email" placeholder="Email">
-                <input type="password" placeholder="Contraseña">
-                <a href="#">Olvidaste tu contraseña?</a>
-                <button>Iniciar</button>
-            </form>
+            <EditForm Model="@this" OnValidSubmit="PerformLogin">
+                <h1>inicar sesion</h1>
+                <InputText id="email" @bind-Value="Email" type="email" placeholder="Correo electrónico" />
+                <InputText id="password" @bind-Value="Password" type="password" placeholder="Contraseña" />
+                <button type="submit">Iniciar sesion</button>
+            </EditForm>
         </div>
         <div class="toggle-container">
             <div class="toggle">
@@ -31,31 +29,32 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+@code {
+   string Email = "";
+    string Password = "";
+
+[Inject]
+public IJSRuntime JSRuntime { get; set; }
+
+async Task PerformLogin()
+{
+    try {
+        var userId = await JSRuntime.InvokeAsync<string>("loginUser", Email, Password);
+        if (userId != null) {
+            await JSRuntime.InvokeVoidAsync("alertaLogin", "Inicio de sesión exitoso!"); // Llama a la función de alerta
+            NavigationManager.NavigateTo("/home");
+            Console.WriteLine($"User ID: {userId}");
+        } else {
+            await JSRuntime.InvokeVoidAsync("alertaError", "Inicio de sesión fallido"); // Llama a la función de alerta
+        }
+    } catch (Exception exception) {
+        // Manejar errores
+        await JSRuntime.InvokeVoidAsync("alertaError", "Inicio de sesión fallido"); // Llama a la función de alerta con el mensaje de error
+    }
 }
 
-@code {
-    private string Username { get; set; }
-    private string Password { get; set; }
-    private bool IsLoggedIn { get; set; }
-
-    private void registro()
-    {
-        NavigationManager.NavigateTo("/registro");
-    }
-    private void login()
-    {
-        // Perform login logic here
-        // For simplicity, let's assume the login is successful
-        IsLoggedIn = true;
-    }
-
-    private void Logout()
-    {
-        // Perform logout logic here
-        // For simplicity, let's assume the logout is successful
-        IsLoggedIn = false;
-        Username = string.Empty;
-        Password = string.Empty;
-    }
+private void registro()
+{
+    NavigationManager.NavigateTo("/registro");
+}
 }
