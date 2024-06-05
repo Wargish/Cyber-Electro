@@ -1,0 +1,187 @@
+﻿@page "/ordenCompra"
+@inject IJSRuntime JSRuntime
+<PageTitle>Orden de Compra</PageTitle>
+
+<h3>Orden de Compra</h3>
+
+<div class="container">
+    <form class="form-horizontal">
+        <div class="form-group">
+            <p>
+                <label class="control-label col-xl-2">Empresa:</label>
+                <InputText class="form-control" id="empresa" @bind-Value="empresa" placeholder="Empresa"/>
+            </p>
+            <div class="col-sm-10">
+                <label class="control-label col-sm-2">Nombre:</label>
+                <InputText class="form-control" id="nombre" @bind-Value="nombre" />
+            </div>
+            <div class="col-sm-10">
+                <label class="control-label col-sm-2">Direccion:</label>
+                <InputText class="form-control" id="direccion" @bind-Value="direccion" />
+            </div>
+            <div class="col-sm-10">
+                <label class="control-label col-sm-2">Telefono:</label>
+                <InputText class="form-control" id="telefono" @bind-Value="telefono" />
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="document active">
+    <div class="spreadSheetGroup">
+        <hr style="visibility:hidden" />
+        <table class="proposedWork" width="100%" style="margin-top:20px">
+            <thead>
+            <th>Cantidad</th>
+            <th>Nombre</th>
+            <th>Precio</th>
+            <th class="amountColumn">TOTAL</th>
+            <th class="docEdit trAdd" @onclick="AddItem">+</th>
+            </thead>
+            <tbody>
+            @foreach (var item in items)
+            {
+                <tr>
+                    <td><input type="number" id="cantidad" @bind="item.Quantity" @bind:event="oninput" @onchange="() => UpdateItem(item, item.Quantity, item.Cost)" /></td>
+                    <td class="nombreProducto"><input type="text" id="nombreProducto" style="width: 100%" @bind="item.NombreProducto" /></td>
+                    <td class="amount"><input type="number" @bind="item.Cost" @bind:event="oninput" @onchange="() => UpdateItem(item, item.Quantity, item.Cost)" /></td>
+                    <td class="amount amountColumn rowTotal">$@item.Total</td>
+                    <td class="docEdit tdDelete" @onclick="() => DeleteItem(item)">X</td>
+                </tr>
+            }
+            </tbody>
+            <tfoot>
+            <tr>
+                <td style="border:none"></td>
+                <td style="border:none"></td>
+                <td style="border:none"></td>
+                <td style="border:none;text-align:right">SUBTOTAL:</td>
+                <td class="amount subtotal">$@subtotal.ToString("F2")</td>
+                <td class="docEdit"></td>
+            </tr>
+            <tr>
+                <td style="border:none"></td>
+                <td style="border:none"></td>
+                <td style="border:none"></td>
+                <td style="border:none;text-align:right">IVA(19%):</td>
+                <td class="amount">$@tax.ToString("F2")</td>
+                <td class="docEdit"></td>
+            </tr>
+            <tr>
+                <td style="border:none"></td>
+                <td style="border:none"></td>
+                <td style="border:none"></td>
+                <td style="border:none;text-align:right">TOTAL:</td>
+                <td class="total amount">$@total.ToString("F2")</td>
+                <td class="docEdit"></td>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+    <button type="button" class="btn-primary" @onclick="FinalizarCompra">Finalizar compra</button>
+</div>
+
+@code {
+    private List<Productos> items = new List<Productos> { new Productos() };
+    private decimal subtotal = 0;
+    private decimal tax = 0;
+    private decimal total = 0;
+
+    string empresa = "";
+    string nombre = "";
+    string direccion = "";
+    string telefono = "";
+
+    private void AddItem()
+    {
+        items.Add(new Productos());
+        CalculateTotal();
+    }
+
+    private void DeleteItem(Productos item)
+    {
+        if (items.Count > 1)
+        {
+            items.Remove(item);
+            CalculateTotal();
+        }
+    }
+
+    private void CalculateTotal()
+    {
+        subtotal = 0;
+        foreach (var item in items)
+        {
+            item.Total = item.Quantity * item.Cost;
+            subtotal += item.Total;
+        }
+
+        tax = subtotal * 0.19m; // Calculating tax as 19% of subtotal
+        total = subtotal + tax; // Total is sum of subtotal and tax
+
+    }
+
+    private void UpdateItem(Productos item, int quantity, decimal cost)
+    {
+        item.Quantity = quantity;
+        item.Cost = cost;
+        CalculateTotal();
+    }
+
+    private async Task FinalizarCompra()
+    {
+        // Recuperar la ID del usuario del almacenamiento local
+        var userId = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userId");
+        
+        // Recoger los datos adicionales
+        var userData = await JSRuntime.InvokeAsync<Dictionary<string, object>>("getAdditionalData", userId);
+        var nombre = userData["nombre"].ToString();
+        var direccion = userData["direccion"].ToString();
+        var telefono = userData["telefono"].ToString();
+
+        var orden = new OrdenDeCompra
+        {
+            Empresa = empresa,
+            Nombre = nombre,
+            Direccion = direccion,
+            Telefono = telefono,
+            Items = items,
+            Total = total
+        };
+        await JSRuntime.InvokeVoidAsync("saveOrder", orden);
+    }
+    
+    
+    // protected async
+    
+    protected override async Task OnInitializedAsync()
+    {
+        // Recuperar la ID del usuario del almacenamiento local
+        var userId = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userId");
+
+        // Recoger los datos adicionales
+        var userData = await JSRuntime.InvokeAsync<Dictionary<string, object>>("getAdditionalData", userId);
+        nombre = userData["nombre"].ToString();
+        direccion = userData["direccion"].ToString();
+        telefono = userData["telefono"].ToString();
+    }
+    
+    public class OrdenDeCompra
+    {
+        public string Empresa { get; set; } = "";
+        public string Nombre { get; set; } = "";
+        public string Direccion { get; set; } = "";
+        public string Telefono { get; set; } = "";
+        public List<Productos> Items { get; set; } = new List<Productos>();
+        public decimal Total { get; set; } = 0;
+    }
+    
+    public class Productos
+    {
+        public int Quantity { get; set; } = 0;
+        public string NombreProducto { get; set; } = "";
+        public decimal Cost { get; set; } = 0;
+        public decimal Total { get; set; } = 0;
+    }
+
+}

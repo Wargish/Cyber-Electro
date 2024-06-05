@@ -1,8 +1,8 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword  } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-import { doc, setDoc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
-
+import { doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import { addDoc, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyCpfbHSHQA_0VgrdNCvMQKc1D1DrNa49RM",
@@ -56,6 +56,7 @@ export async function loginUser(email, password) {
     const auth = getAuth();
     try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        localStorage.setItem('userId', userCredential.user.uid);
         return userCredential.user.uid;
     } catch (error) {
         console.error("Error signing in: ", error);
@@ -70,6 +71,74 @@ export async function loginUser(email, password) {
 }
 
 window.loginUser = loginUser;
+
+async function getUserId() {
+    return await localStorage.getItem('userId');
+}
+
+
+export async function getAdditionalData(uid) {
+    try {
+        const docRef = doc(db, 'usuarios', uid);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            return docSnap.data();
+        } else {
+            console.log("No such document!");
+        }
+    } catch (error) {
+        console.error("Error getting document: ", error);
+    }
+}
+
+window.getAdditionalData = getAdditionalData;
+
+async function saveOrder(order) {
+    try {
+        // Fetch the user ID asynchronously
+        const userId = await getUserId();
+
+        // Check if order and user ID are defined
+        if (order && userId) {
+            // Set the user ID in the order object
+            order.UserId = userId;
+
+            // Store the order in Firestore
+            const ordersCollection = collection(db, 'ordenes');
+            await addDoc(ordersCollection, order);
+        } else {
+            console.error("Order or UserId is undefined");
+        }
+    } catch (error) {
+        console.error("Error saving order: ", error);
+    }
+}
+
+window.saveOrder = saveOrder;
+
+export async function getUserOrders(userId) {
+    try {
+        // Get a reference to the orders collection
+        const ordersCollection = collection(db, 'ordenes');
+
+        // Create a query against the collection
+        const q = query(ordersCollection, where("UserId", "==", userId));
+
+        // Get all documents that match the query
+        const querySnapshot = await getDocs(q);
+
+        // Map each document to its data
+        const orders = querySnapshot.docs.map(doc => doc.data());
+
+        // Return the list of orders
+        return orders;
+    } catch (error) {
+        console.error("Error getting user orders: ", error);
+    }
+}
+
+window.getUserOrders = getUserOrders;
 
 
 
