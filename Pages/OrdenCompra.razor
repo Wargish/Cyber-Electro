@@ -149,6 +149,8 @@
             Total = total
         };
         await JSRuntime.InvokeVoidAsync("saveOrder", orden);
+        await JSRuntime.InvokeVoidAsync("alertaSucces", "Compra finalizada con éxito!");
+
     }
     
     

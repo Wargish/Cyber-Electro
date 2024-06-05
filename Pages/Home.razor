@@ -1,10 +1,11 @@
 ﻿@page "/home"
 @inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
 
 <PageTitle>Home</PageTitle>
 
-
 <link rel="stylesheet" href="/css/home.css">
+
 <h3>Historial de Ordenes de Compra</h3>
 
 @if (orders == null)
@@ -21,6 +22,7 @@ else
         <th>Dirección</th>
         <th>Teléfono</th>
         <th>Total</th>
+        <th>Detalle</th>
     </tr>
     </thead>
     <tbody>
@@ -32,19 +34,82 @@ else
         <td>@order.Direccion</td>
         <td>@order.Telefono</td>
         <td>$@order.Total</td>
+        <td><button @onclick="() => ShowDetail(order)">Detalle</button></td>
     </tr>
     }
     </tbody>
 </table>
 }
 
+<!-- Modal -->
+<div class="modal" tabindex="-1" style="display:@(selectedOrder != null ? "block" : "none")">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalle de la Orden</h5>
+                <button type="button" class="btn-close" @onclick="CloseModal"></button>
+            </div>
+            <div class="modal-body">
+                @if (selectedOrder != null)
+                {
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Cantidad</th>
+                        <th>Nombre del producto</th>
+                        <th>Precio</th>
+                        <th>Total</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var item in selectedOrder.Items)
+                    {
+                    <tr>
+                        <td>@item.Quantity</td>
+                        <td>@item.NombreProducto</td>
+                        <td>@item.Cost</td>
+                        <td>@item.Total</td>
+                    </tr>
+                    }
+                    </tbody>
+                </table>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" @onclick="CloseModal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<button @onclick="Logout">Cerrar sesión</button>
+
+
 @code {
     private List<OrdenDeCompra> orders;
+    private OrdenDeCompra selectedOrder; // Add this line
+
 
     protected override async Task OnInitializedAsync()
     {
         var userId = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userId");
         orders = await JSRuntime.InvokeAsync<List<OrdenDeCompra>>("getUserOrders", userId);
+    }
+    
+    private void ShowDetail(OrdenDeCompra order)
+    {
+        selectedOrder = order;
+    }
+
+    private void CloseModal()
+    {
+        selectedOrder = null;
+    }
+    
+    private async Task Logout()
+    {
+        await JSRuntime.InvokeVoidAsync("logoutUser");
+        NavigationManager.NavigateTo("/");
     }
 
     public class OrdenDeCompra
@@ -53,6 +118,15 @@ else
         public string Nombre { get; set; }
         public string Direccion { get; set; }
         public string Telefono { get; set; }
+        public List<Productos> Items { get; set; } // Add this line
+        public decimal Total { get; set; }
+    }
+    
+    public class Productos
+    {
+        public int Quantity { get; set; }
+        public string NombreProducto { get; set; }
+        public decimal Cost { get; set; }
         public decimal Total { get; set; }
     }
 }
