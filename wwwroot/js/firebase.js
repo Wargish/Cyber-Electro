@@ -1,7 +1,8 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
-import { getAuth, createUserWithEmailAndPassword,signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword  } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 import { doc, setDoc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyCpfbHSHQA_0VgrdNCvMQKc1D1DrNa49RM",
@@ -58,11 +59,20 @@ export async function loginUser(email, password) {
         return userCredential.user.uid;
     } catch (error) {
         console.error("Error signing in: ", error);
+        Swal.fire({
+            title: 'Error',
+            text: 'Usuario o contraseña incorrectos',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
         throw error;
     }
 }
 
 window.loginUser = loginUser;
+
+
+
 
 window.alertaSucces = function(message) {
     Swal.fire({  // Muestra una alerta con animación
@@ -86,6 +96,9 @@ window.alertaError = function(message) {
 window.alertaLogin = function(message) {
     Swal.fire({  // Muestra una alerta con animación
         title: message,
-        icon: 'succes',
+        icon: 'success',
     });
 }
+
+
+

@@ -1,11 +1,10 @@
 @page "/"
+@layout Pages.Emptylayout
 @inject NavigationManager NavigationManager
 <PageTitle>Home</PageTitle>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 <link rel="stylesheet" href="/css/Logincss.css"/>
-
-<img src="/fondoo.jpg" alt="Background Image" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; object-fit: cover;">
 
 
     <div class="container" id="container">
@@ -45,11 +44,11 @@ async Task PerformLogin()
             NavigationManager.NavigateTo("/home");
             Console.WriteLine($"User ID: {userId}");
         } else {
-            await JSRuntime.InvokeVoidAsync("alertaError", "Inicio de sesión fallido"); // Llama a la función de alerta
+            
         }
     } catch (Exception exception) {
         // Manejar errores
-        await JSRuntime.InvokeVoidAsync("alertaError", "Inicio de sesión fallido"); // Llama a la función de alerta con el mensaje de error
+        
     }
 }
 
