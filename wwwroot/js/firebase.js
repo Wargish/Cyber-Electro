@@ -106,7 +106,16 @@ async function saveOrder(order) {
 
             // Store the order in Firestore
             const ordersCollection = collection(db, 'ordenes');
-            await addDoc(ordersCollection, order);
+            const docRef = await addDoc(ordersCollection, order);
+
+            // Add the ID of the created document to the order object
+            order.idOrden = docRef.id;
+
+            // Update the order in Firestore with the new idOrden
+            await setDoc(docRef, order);
+
+            // Return the ID of the created document
+            return docRef.id;
         } else {
             console.error("Order or UserId is undefined");
         }
@@ -114,8 +123,28 @@ async function saveOrder(order) {
         console.error("Error saving order: ", error);
     }
 }
-
 window.saveOrder = saveOrder;
+
+async function saveEmpresa(empresas, orderId) {
+    try {
+        // Check if empresa is defined
+        if (empresas) {
+            // Add the order ID to the empresa object
+            empresas.orderId = orderId;
+
+            // Store the empresa in Firestore
+            const empresasCollection = collection(db, 'empresas');
+            await addDoc(empresasCollection, empresas);
+        } else {
+            console.error("Empresa is undefined");
+        }
+    } catch (error) {
+        console.error("Error saving empresa: ", error);
+    }
+}
+
+window.saveEmpresa = saveEmpresa;
+
 
 export async function getUserOrders(userId) {
     try {
@@ -139,6 +168,28 @@ export async function getUserOrders(userId) {
 }
 
 window.getUserOrders = getUserOrders;
+
+async function getEmpresa(orderId) {
+    try {
+        // Get a reference to the empresas collection
+        const empresasCollection = collection(db, 'empresas');
+
+        // Create a query against the collection
+        const q = query(empresasCollection, where("orderId", "==", orderId));
+
+        // Get all documents that match the query
+        const querySnapshot = await getDocs(q);
+
+        // Map each document to its data
+        const empresas = querySnapshot.docs.map(doc => doc.data());
+
+        // Return the first empresa (there should only be one)
+        return empresas[0];
+    } catch (error) {
+        console.error("Error getting empresa: ", error);
+    }
+}
+window.getEmpresa = getEmpresa;
 
 export async function logoutUser() {
     const auth = getAuth();

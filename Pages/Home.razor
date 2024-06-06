@@ -17,24 +17,26 @@ else
 <table class="table">
     <thead>
     <tr>
-        <th>Empresa</th>
-        <th>Nombre</th>
+        <th>NombreCliente</th>
         <th>Dirección</th>
         <th>Teléfono</th>
+        <th>Fecha</th>
         <th>Total</th>
-        <th>Detalle</th>
+        <th>Detalle Productos</th>
+        <th>Detalle Empresa</th>
     </tr>
     </thead>
     <tbody>
     @foreach (var order in orders)
     {
     <tr>
-        <td>@order.Empresa</td>
         <td>@order.Nombre</td>
         <td>@order.Direccion</td>
         <td>@order.Telefono</td>
+        <td>@order.Fecha.ToString("dd/MM/yyyy")</td>
         <td>$@order.Total</td>
-        <td><button @onclick="() => ShowDetail(order)">Detalle</button></td>
+        <td><button class="btn btn-primary" @onclick="() => ShowDetail(order)">Detalle</button></td>
+        <td><button class="btn btn-secondary" @onclick="() => ShowEmpresa(order)">Empresa</button></td>
     </tr>
     }
     </tbody>
@@ -52,27 +54,27 @@ else
             <div class="modal-body">
                 @if (selectedOrder != null)
                 {
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>Cantidad</th>
-                        <th>Nombre del producto</th>
-                        <th>Precio</th>
-                        <th>Total</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @foreach (var item in selectedOrder.Items)
-                    {
-                    <tr>
-                        <td>@item.Quantity</td>
-                        <td>@item.NombreProducto</td>
-                        <td>@item.Cost</td>
-                        <td>@item.Total</td>
-                    </tr>
-                    }
-                    </tbody>
-                </table>
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Cantidad</th>
+                            <th>Nombre del producto</th>
+                            <th>Precio</th>
+                            <th>SubTotal</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var item in selectedOrder.Items)
+                        {
+                            <tr>
+                                <td>@item.Quantity</td>
+                                <td>@item.NombreProducto</td>
+                                <td>@item.Cost</td>
+                                <td>@item.Total</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
                 }
             </div>
             <div class="modal-footer">
@@ -84,10 +86,36 @@ else
 
 <button @onclick="Logout">Cerrar sesión</button>
 
+<!-- Otro Modal -->
+
+<div class="modal" tabindex="-1" style="display:@(selectedEmpresa != null ? "block" : "none")">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalle de la Empresa</h5>
+                <button type="button" class="btn-close" @onclick="CloseEmpresaModal"></button>
+            </div>
+            <div class="modal-body">
+                @if (selectedEmpresa != null)
+                {
+                <p>Razon Social: @selectedEmpresa.NombreEmpresa</p>
+                <p>RUT: @selectedEmpresa.RutEmpresa</p>
+                <p>Dirección: @selectedEmpresa.DireccionEmpresa</p>
+                <p>Teléfono: @selectedEmpresa.TelefonoEmpresa</p>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" @onclick="CloseEmpresaModal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 @code {
     private List<OrdenDeCompra> orders;
-    private OrdenDeCompra selectedOrder; // Add this line
+    private OrdenDeCompra selectedOrder;
+    private Empresa selectedEmpresa;
 
 
     protected override async Task OnInitializedAsync()
@@ -96,7 +124,7 @@ else
         orders = await JSRuntime.InvokeAsync<List<OrdenDeCompra>>("getUserOrders", userId);
     }
     
-    private void ShowDetail(OrdenDeCompra order)
+    private async Task ShowDetail(OrdenDeCompra order)
     {
         selectedOrder = order;
     }
@@ -104,6 +132,16 @@ else
     private void CloseModal()
     {
         selectedOrder = null;
+    }
+    
+    private async Task ShowEmpresa(OrdenDeCompra order)
+    {
+        selectedEmpresa = await JSRuntime.InvokeAsync<Empresa>("getEmpresa", order.idOrden);
+    }
+
+    private void CloseEmpresaModal()
+    {
+        selectedEmpresa = null;
     }
     
     private async Task Logout()
@@ -114,12 +152,13 @@ else
 
     public class OrdenDeCompra
     {
-        public string Empresa { get; set; }
+        public string idOrden { get; set; }
         public string Nombre { get; set; }
         public string Direccion { get; set; }
         public string Telefono { get; set; }
         public List<Productos> Items { get; set; } // Add this line
         public decimal Total { get; set; }
+        public DateOnly Fecha { get; set; } = DateOnly.FromDateTime(DateTime.Now);
     }
     
     public class Productos
@@ -128,5 +167,13 @@ else
         public string NombreProducto { get; set; }
         public decimal Cost { get; set; }
         public decimal Total { get; set; }
+    }
+    
+    public class Empresa
+    {
+        public string NombreEmpresa { get; set; } = "";
+        public string RutEmpresa { get; set; } = "";
+        public string DireccionEmpresa { get; set; } = "";
+        public string TelefonoEmpresa { get; set; } = "";
     }
 }
