@@ -1,4 +1,8 @@
 ﻿@page "/ordenCompra"
+@using iText.Kernel.Pdf;
+@using iText.Layout;
+@using iText.Layout.Element;
+@using System.IO;
 @inject IJSRuntime JSRuntime
 <PageTitle>Orden de Compra</PageTitle>
 
@@ -148,38 +152,64 @@
         CalculateTotal();
     }
 
-    private async Task FinalizarCompra()
+  private async Task FinalizarCompra()
+{
+    // Recuperar la ID del usuario del almacenamiento local
+    var userId = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userId");
+    // Recoger los datos adicionales
+    var userData = await JSRuntime.InvokeAsync<Dictionary<string, object>>("getAdditionalData", userId);
+    var nombre = userData["nombre"].ToString();
+    var direccion = userData["direccion"].ToString();
+    var telefono = userData["telefono"].ToString();
+    
+    var empresas = new Empresa
     {
-        // Recuperar la ID del usuario del almacenamiento local
-        var userId = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userId");
-        // Recoger los datos adicionales
-        var userData = await JSRuntime.InvokeAsync<Dictionary<string, object>>("getAdditionalData", userId);
-        var nombre = userData["nombre"].ToString();
-        var direccion = userData["direccion"].ToString();
-        var telefono = userData["telefono"].ToString();
-        
-        var empresas = new Empresa
-        {
-            NombreEmpresa = nombreEmpresa,
-            RutEmpresa = rutEmpresa,
-            DireccionEmpresa = direccionEmpresa,
-            TelefonoEmpresa = telefonoEmpresa
-        };
+        NombreEmpresa = nombreEmpresa,
+        RutEmpresa = rutEmpresa,
+        DireccionEmpresa = direccionEmpresa,
+        TelefonoEmpresa = telefonoEmpresa
+    };
 
-        var orden = new OrdenDeCompra
-        {
-            Nombre = nombre,
-            Direccion = direccion,
-            Telefono = telefono,
-            Items = items,
-            Total = total,
-            Fecha = DateOnly.FromDateTime(DateTime.Now)
-        };
-        var ordenId = await JSRuntime.InvokeAsync<string>("saveOrder", orden);
-        await JSRuntime.InvokeVoidAsync("saveEmpresa", empresas, ordenId);
-        await JSRuntime.InvokeVoidAsync("alertaSucces", "Compra finalizada con éxito!");
+    var orden = new OrdenDeCompra
+    {
+        Nombre = nombre,
+        Direccion = direccion,
+        Telefono = telefono,
+        Items = items,
+        Total = total,
+        Fecha = DateOnly.FromDateTime(DateTime.Now)
+    };
+    var ordenId = await JSRuntime.InvokeAsync<string>("saveOrder", orden);
+    await JSRuntime.InvokeVoidAsync("saveEmpresa", empresas, ordenId);
 
+    // Generar PDF
+    byte[] pdfBytes = GenerarPDFConDatosDeCompra(nombre, direccion, telefono, empresas, orden);
+
+    // Aquí deberías guardar el PDF en tu base de datos o sistema de archivos
+    // Por ejemplo, guardar el array de bytes en una base de datos o un sistema de archivos
+    // Este paso depende de tu implementación específica
+
+    await JSRuntime.InvokeVoidAsync("alertaSucces", "Compra finalizada con éxito!");
+}
+
+private byte[] GenerarPDFConDatosDeCompra(string nombre, string direccion, string telefono, Empresa empresas, OrdenDeCompra orden)
+{
+    using (MemoryStream memoryStream = new MemoryStream())
+    {
+        using (PdfWriter writer = new PdfWriter(memoryStream))
+        {
+            using (PdfDocument pdf = new PdfDocument(writer))
+            {
+                Document document = new Document(pdf);
+                document.Add(new Paragraph($"Nombre: {nombre}"));
+                document.Add(new Paragraph($"Dirección: {direccion}"));
+                document.Add(new Paragraph($"Teléfono: {telefono}"));
+                // Agrega aquí más información según sea necesario
+            }
+        }
+        return memoryStream.ToArray();
     }
+}
     
     
     // protected async

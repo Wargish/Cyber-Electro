@@ -24,6 +24,7 @@ else
         <th>Total</th>
         <th>Detalle Productos</th>
         <th>Detalle Empresa</th>
+        <th>Facturas</th>
     </tr>
     </thead>
     <tbody>
@@ -37,6 +38,7 @@ else
         <td>$@order.Total</td>
         <td><button class="btn btn-primary" @onclick="() => ShowDetail(order)">Detalle</button></td>
         <td><button class="btn btn-secondary" @onclick="() => ShowEmpresa(order)">Empresa</button></td>
+        <td><button class="btn btn-info" @onclick="() => DescargarPDF(order.idOrden)">DescargarFactura</button></td>
     </tr>
     }
     </tbody>
@@ -117,12 +119,17 @@ else
     private OrdenDeCompra selectedOrder;
     private Empresa selectedEmpresa;
 
-
     protected override async Task OnInitializedAsync()
     {
         var userId = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userId");
         orders = await JSRuntime.InvokeAsync<List<OrdenDeCompra>>("getUserOrders", userId);
     }
+
+    private async Task DescargarPDF(string ordenDeCompraId)
+    {
+        await JSRuntime.InvokeVoidAsync("descargarPDF", ordenDeCompraId);
+    }
+   
     
     private async Task ShowDetail(OrdenDeCompra order)
     {
@@ -149,6 +156,8 @@ else
         await JSRuntime.InvokeVoidAsync("logoutUser");
         NavigationManager.NavigateTo("/");
     }
+
+    
 
     public class OrdenDeCompra
     {

@@ -2,8 +2,9 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import { getAuth, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword  } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 import { doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import { getStorage } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js';
 import { addDoc, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
-
+import { ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js';
 const firebaseConfig = {
   apiKey: "AIzaSyCpfbHSHQA_0VgrdNCvMQKc1D1DrNa49RM",
   authDomain: "cyber-electro-d346e.firebaseapp.com",
@@ -17,20 +18,26 @@ const firebaseConfig = {
 // Get a reference to the authentication service
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const storage = getStorage(app);
 
-export async function registerUser(email, password) {
+async function descargarPDF(ordenDeCompraId) {
+    // Asegúrate de usar la referencia de storage correcta importada de Firebase
+    const storageRef = getStorage(app);
+
+    // Construye la referencia al archivo PDF específico en el directorio 'orders/'
+    const pdfRef = ref(storageRef, 'orders/order-' + ordenDeCompraId + '.pdf');
+
     try {
-        const auth = getAuth();
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-
-        return user.uid; // Devuelve el ID del usuario
+        // Obtiene la URL de descarga del archivo PDF
+        const url = await getDownloadURL(pdfRef);
+        // Abre el PDF en una nueva pestaña del navegador
+        window.open(url, '_blank');
     } catch (error) {
-        console.error("Error registering user: ", error);
+        console.error('Error al descargar el archivo:', error);
     }
 }
 
-window.registerUser = registerUser;
+window.descargarPDF = descargarPDF;
 
 
 export async function saveAdditionalData(uid, nombre, direccion, telefono, email, password) {
@@ -96,25 +103,19 @@ window.getAdditionalData = getAdditionalData;
 
 async function saveOrder(order) {
     try {
-        // Fetch the user ID asynchronously
         const userId = await getUserId();
-
-        // Check if order and user ID are defined
         if (order && userId) {
-            // Set the user ID in the order object
             order.UserId = userId;
-
-            // Store the order in Firestore
             const ordersCollection = collection(db, 'ordenes');
             const docRef = await addDoc(ordersCollection, order);
-
-            // Add the ID of the created document to the order object
             order.idOrden = docRef.id;
 
-            // Update the order in Firestore with the new idOrden
-            await setDoc(docRef, order);
+            // Generar y guardar el PDF, y obtener el identificador o ruta del PDF
+            const pdfId = await generateAndSavePDF(order);
+            // Agregar el campo `pdf` al objeto `order`
+            order.pdf = pdfId;
 
-            // Return the ID of the created document
+            await setDoc(docRef, order);
             return docRef.id;
         } else {
             console.error("Order or UserId is undefined");
@@ -124,6 +125,34 @@ async function saveOrder(order) {
     }
 }
 window.saveOrder = saveOrder;
+async function generateAndSavePDF(order) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    doc.text(JSON.stringify(order, null, 2), 10, 10);
+
+    try {
+        // Convert the PDF to Blob directly without using .then
+        const blob = doc.output('blob');
+
+        const pdfName = `order-${order.idOrden}.pdf`;
+
+        // Upload the Blob to Firebase Storage
+        const storageRef = ref(storage, `orders/${pdfName}`);
+        const snapshot = await uploadBytes(storageRef, blob);
+
+        // Get the public URL of the file
+        const pdfUrl = await getDownloadURL(snapshot.ref);
+
+        // Implement the logic to update the Firestore document with the PDF URL
+        // For example:
+        // await updateDoc(doc(db, 'ordenes', order.idOrden), { pdf: pdfUrl });
+
+        return pdfUrl; // Return the PDF URL
+    } catch (error) {
+        console.error("Error generating or uploading PDF: ", error);
+    }
+}
+
 
 async function saveEmpresa(empresas, orderId) {
     try {
