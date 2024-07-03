@@ -128,96 +128,145 @@ window.saveOrder = saveOrder;
 
 async function generarYGuardarPDF(orden, datosEmpresas, DatosProductosString) {
     try {
-        // Convertir el string de DatosProductos en líneas
         const productLines = DatosProductosString.split('\n').filter(line => line.trim() !== '');
-
-        // Crear filas de la tabla de productos a partir de las líneas
         const productTableBody = productLines.map(line => {
             const parts = line.split(',').map(part => part.split(':')[1].trim());
             return parts;
         });
 
-        // Calcular el subtotal (total sin IVA)
-        const subtotal = orden.total / 1.19; // IVA es el 19%, entonces subtotal = total / 1.19
-        const iva = orden.total - subtotal; // IVA es la diferencia entre total y subtotal
+        const subtotal = orden.total / 1.19;
+        const iva = orden.total - subtotal;
 
-        // Definir el contenido del PDF
+        // Define las fuentes
+        pdfMake.fonts = {
+            Arial: {
+                normal: 'http://localhost:5245/js/fonts/ARIAL.TTF',
+                bold: 'http://localhost:5245/js/fonts/ARIALBD.TTF',
+                italics: 'http://localhost:5245/js/fonts/ARIALI.TTF',
+                bolditalics: 'http://localhost:5245/js/fonts/ARIALBI.TTF'
+            }
+        };
+
         const docDefinition = {
             content: [
-                // Título y tipo de documento
-                { text: 'FACTURA', style: 'header', alignment: 'center' },
-                { text: 'Orden de Compra', style: 'subheader', alignment: 'center' },
-                
-                // Información de la orden
+                { text: 'FACTURA', style: 'header' },
+                { text: `Orden de Compra: ${orden.idOrden}`, style: 'subheader' },
                 {
-                    columns: [
-                        {
-                            width: 'auto',
-                            stack: [
-                                { text: `Nombre Cliente: ${orden.nombre}` },
-                                { text: `ID de Orden: ${orden.idOrden}` },
-                                { text: `Fecha: ${orden.fecha}` },
-                                { text: `Dirección de Email: ${orden.direccion}` }
-                            ]
-                        },
-                        {
-                            width: '*',
-                            stack: datosEmpresas ? [
-                                { text: 'Datos Empresa', style: 'subheader' },
-                                { text: `Nombre: ${datosEmpresas.nombreEmpresa}` },
-                                { text: `RUT: ${datosEmpresas.rutEmpresa}` },
-                                { text: `Dirección: ${datosEmpresas.direccionEmpresa}` },
-                                { text: `Teléfono: ${datosEmpresas.telefonoEmpresa}` }
-                            ] : []
-                        }
-                    ],
-                    margin: [0, 20]
-                },
-                
-                // Tabla de productos
-                {
+                    style: 'tableExample',
                     table: {
-                        headerRows: 1,
-                        widths: ['auto', '*', 'auto', 'auto'],
+                        widths: [150, '*'],
                         body: [
-                            // Cabecera de la tabla
-                            [
-                                { text: 'Cantidad', style: 'tableHeader' },
-                                { text: 'Nombre Producto', style: 'tableHeader' },
-                                { text: 'Precio Unitario', style: 'tableHeader', alignment: 'right' },
-                                { text: 'Total', style: 'tableHeader', alignment: 'right' }
-                            ],
-                            // Filas de la tabla
-                            ...productTableBody.map(row => [
-                                row[0], // Cantidad
-                                { text: row[1], alignment: 'left' }, // Nombre
-                                { text: `$${row[2]}`, alignment: 'right' }, // Precio Unitario
-                                { text: `$${row[3]}`, alignment: 'right' } // Total
-                            ])
+                            [{ text: 'Datos del Cliente', colSpan: 2, style: 'subheader', fillColor: '#ffff00' }, {}],
+                            [{ text: 'Cliente:', fillColor: '#FFFF7F' }, `${orden.nombre}`],
+                            [{ text: 'Fecha:', fillColor: '#FFFF7F' }, `${orden.fecha}`],
+                            [{ text: 'Email:', fillColor: '#FFFF7F' }, `${orden.direccion}`],
                         ]
+                    },
+                    layout: {
+                        fillColor: function (rowIndex, node, columnIndex) {
+                            return (rowIndex === 0 || rowIndex === node.table.body.length - 1) ? '#eeeeee' : null;
+                        },
+                        hLineWidth: function (i, node) {
+                            return (i === 0 || i === node.table.body.length) ? 2 : 0.5;
+                        },
+                        vLineWidth: function (i) {
+                            return 0.5;
+                        },
+                        hLineColor: function (i, node) {
+                            return (i === 0 || i === node.table.body.length) ? 'black' : 'gray';
+                        },
+                        vLineColor: function (i) {
+                            return 'black';
+                        },
+                        paddingLeft: function (i) {
+                            return i === 0 ? 4 : 4;
+                        },
+                        paddingRight: function (i, node) {
+                            return (i === node.table.widths.length - 1) ? 4 : 4;
+                        }
                     },
                     margin: [0, 20]
                 },
-                
-                // Subtotal
                 {
-                    text: `Subtotal: $${subtotal.toFixed(2)}`,
-                    alignment: 'right',
-                    margin: [0, 10]
+                    style: 'tableExample',
+                    table: {
+                        widths: [150, '*'],
+                        body: [
+                            [{ text: 'Datos de la Empresa', colSpan: 2, style: 'subheader', fillColor: '#ffff00' }, {}],
+                            [{ text: 'Empresa:', fillColor: '#FFFF7F' }, `${datosEmpresas.nombreEmpresa}`],
+                            [{ text: 'RUT:', fillColor: '#FFFF7F' }, `${datosEmpresas.rutEmpresa}`],
+                            [{ text: 'Dirección:', fillColor: '#FFFF7F' }, `${datosEmpresas.direccionEmpresa}`],
+                            [{ text: 'Teléfono:', fillColor: '#FFFF7F' }, `${datosEmpresas.telefonoEmpresa}`]
+                        ]
+                    },
+                    layout: {
+                        fillColor: function (rowIndex, node, columnIndex) {
+                            return (rowIndex === 0 || rowIndex === node.table.body.length - 1) ? '#eeeeee' : null;
+                        },
+                        hLineWidth: function (i, node) {
+                            return (i === 0 || i === node.table.body.length) ? 2 : 0.5;
+                        },
+                        vLineWidth: function (i) {
+                            return 0.5;
+                        },
+                        hLineColor: function (i, node) {
+                            return (i === 0 || i === node.table.body.length) ? 'black' : 'gray';
+                        },
+                        vLineColor: function (i) {
+                            return 'black';
+                        },
+                        paddingLeft: function (i) {
+                            return i === 0 ? 4 : 4;
+                        },
+                        paddingRight: function (i, node) {
+                            return (i === node.table.widths.length - 1) ? 4 : 4;
+                        }
+                    },
+                    margin: [0, 20]
                 },
-
-                // IVA (19%)
                 {
-                    text: `IVA (19%): $${iva.toFixed(2)}`,
-                    alignment: 'right',
-                    margin: [0, 5]
+                    style: 'tableExample',
+                    table: {
+                        headerRows: 1,
+                        widths: [70, '*', 100, 100],
+                        body: [
+                            ['Cantidad', 'Producto', 'Precio Unit.', 'Total'].map(header => ({ text: header, style: 'tableHeader', fillColor: '#ffff00' })),
+                            ...productTableBody.map(row => [
+                                row[0],
+                                row[1],
+                                { text: `$${row[2]}`, alignment: 'right' },
+                                { text: `$${row[3]}`, alignment: 'right' }
+                            ])
+                        ]
+                    },
+                    layout: {
+                        hLineWidth: function (i, node) {
+                            return (i === 0 || i === node.table.body.length) ? 2 : 0.5;
+                        },
+                        vLineWidth: function (i) {
+                            return 0.5;
+                        },
+                        hLineColor: function (i, node) {
+                            return (i === 0 || i === node.table.body.length) ? 'black' : 'gray';
+                        },
+                        vLineColor: function (i) {
+                            return 'black';
+                        },
+                        paddingLeft: function (i) {
+                            return i === 0 ? 4 : 4;
+                        },
+                        paddingRight: function (i, node) {
+                            return (i === node.table.widths.length - 1) ? 4 : 4;
+                        }
+                    },
+                    margin: [0, 20]
                 },
-
-                // Total de la orden
                 {
-                    text: `Total: $${orden.total.toFixed(2)}`,
-                    style: 'total',
-                    alignment: 'right',
+                    columns: [
+                        { text: `Subtotal: $${subtotal.toFixed(2)}`, alignment: 'right', width: '*', fontSize: 14, bold: true, margin: [0, 10], color: '#333' },
+                        { text: `IVA (19%): $${iva.toFixed(2)}`, alignment: 'right', width: '*', fontSize: 14, bold: true, margin: [0, 10], color: '#333' },
+                        { text: `Total: $${orden.total.toFixed(2)}`, alignment: 'right', width: '*', fontSize: 16, bold: true, margin: [0, 10], color: '#333' }
+                    ],
                     margin: [0, 10]
                 }
             ],
@@ -225,31 +274,39 @@ async function generarYGuardarPDF(orden, datosEmpresas, DatosProductosString) {
                 header: {
                     fontSize: 18,
                     bold: true,
-                    margin: [0, 10, 0, 10]
+                    alignment: 'center',
+                    margin: [0, 0, 0, 10],
+                    color: '#000000'
                 },
                 subheader: {
                     fontSize: 14,
-                    margin: [0, 5, 0, 5]
+                    bold: true,
+                    alignment: 'left',
+                    margin: [0, 10, 0, 5],
+                    color: '#000000'
                 },
                 tableHeader: {
                     bold: true,
-                    fontSize: 13,
-                    color: 'black',
-                    fillColor: '#eeeeee'
+                    fontSize: 12,
+                    color: '#000000',
+                    fillColor: '#ffff00'
                 },
-                total: {
-                    fontSize: 14,
-                    bold: true
+                tableExample: {
+                    margin: [0, 5, 0, 15]
                 }
+            },
+            defaultStyle: {
+                font: 'Arial' // Especifica la fuente predeterminada aquí
             }
         };
 
-        // Generar el PDF y obtener el blob
+        // Genera el PDF utilizando pdfMake
         const pdfDocGenerator = pdfMake.createPdf(docDefinition);
+
+        // Convierte el PDF en blob y súbelo a Firebase Storage
         pdfDocGenerator.getBlob(async (blob) => {
-            // Guardar el PDF en el storage de Firebase
             const fileName = `order-${orden.idOrden}.pdf`;
-            const fileRef = ref(storage, 'ordenes/' + fileName); // Directorio 'ordenes' dentro del storage
+            const fileRef = ref(storage, 'ordenes/' + fileName);
             await uploadBytes(fileRef, blob);
             console.log(`PDF generado y guardado como ${fileName}`);
         });
@@ -258,10 +315,6 @@ async function generarYGuardarPDF(orden, datosEmpresas, DatosProductosString) {
         console.error("Error generando o guardando el PDF: ", error);
     }
 }
-
-
-
-
 
 window.generarYGuardarPDF = generarYGuardarPDF;
 

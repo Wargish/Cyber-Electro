@@ -57,6 +57,42 @@
       "PackagePath": "staticwebassets\\js\\firebase.js"
     },
     {
+      "Id": "C:\\Users\\varas\\Documents\\gitthubb\\Cyber-Electro\\wwwroot\\js\\fonts\\ARIAL.TTF",
+      "PackagePath": "staticwebassets\\js\\fonts\\ARIAL.TTF"
+    },
+    {
+      "Id": "C:\\Users\\varas\\Documents\\gitthubb\\Cyber-Electro\\wwwroot\\js\\fonts\\ARIALBD.TTF",
+      "PackagePath": "staticwebassets\\js\\fonts\\ARIALBD.TTF"
+    },
+    {
+      "Id": "C:\\Users\\varas\\Documents\\gitthubb\\Cyber-Electro\\wwwroot\\js\\fonts\\ARIALBI.TTF",
+      "PackagePath": "staticwebassets\\js\\fonts\\ARIALBI.TTF"
+    },
+    {
+      "Id": "C:\\Users\\varas\\Documents\\gitthubb\\Cyber-Electro\\wwwroot\\js\\fonts\\ARIALI.TTF",
+      "PackagePath": "staticwebassets\\js\\fonts\\ARIALI.TTF"
+    },
+    {
+      "Id": "C:\\Users\\varas\\Documents\\gitthubb\\Cyber-Electro\\wwwroot\\js\\fonts\\ARIALN.TTF",
+      "PackagePath": "staticwebassets\\js\\fonts\\ARIALN.TTF"
+    },
+    {
+      "Id": "C:\\Users\\varas\\Documents\\gitthubb\\Cyber-Electro\\wwwroot\\js\\fonts\\ARIALNB.TTF",
+      "PackagePath": "staticwebassets\\js\\fonts\\ARIALNB.TTF"
+    },
+    {
+      "Id": "C:\\Users\\varas\\Documents\\gitthubb\\Cyber-Electro\\wwwroot\\js\\fonts\\ARIALNBI.TTF",
+      "PackagePath": "staticwebassets\\js\\fonts\\ARIALNBI.TTF"
+    },
+    {
+      "Id": "C:\\Users\\varas\\Documents\\gitthubb\\Cyber-Electro\\wwwroot\\js\\fonts\\ARIALNI.TTF",
+      "PackagePath": "staticwebassets\\js\\fonts\\ARIALNI.TTF"
+    },
+    {
+      "Id": "C:\\Users\\varas\\Documents\\gitthubb\\Cyber-Electro\\wwwroot\\js\\fonts\\ARIBLK.TTF",
+      "PackagePath": "staticwebassets\\js\\fonts\\ARIBLK.TTF"
+    },
+    {
       "Id": "C:\\Users\\varas\\Documents\\gitthubb\\Cyber-Electro\\wwwroot\\js\\script.js",
       "PackagePath": "staticwebassets\\js\\script.js"
     },
