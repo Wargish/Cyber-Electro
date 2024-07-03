@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Patricio\\RiderProjects\\Cyber-Electro\\Cyber-Electro.csproj": {}
+    "C:\\Users\\varas\\Documents\\gitthubb\\Cyber-Electro\\Cyber-Electro.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Patricio\\RiderProjects\\Cyber-Electro\\Cyber-Electro.csproj": {
+    "C:\\Users\\varas\\Documents\\gitthubb\\Cyber-Electro\\Cyber-Electro.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Patricio\\RiderProjects\\Cyber-Electro\\Cyber-Electro.csproj",
+        "projectUniqueName": "C:\\Users\\varas\\Documents\\gitthubb\\Cyber-Electro\\Cyber-Electro.csproj",
         "projectName": "Cyber-Electro",
-        "projectPath": "C:\\Users\\Patricio\\RiderProjects\\Cyber-Electro\\Cyber-Electro.csproj",
-        "packagesPath": "C:\\Users\\Patricio\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Patricio\\RiderProjects\\Cyber-Electro\\obj\\",
+        "projectPath": "C:\\Users\\varas\\Documents\\gitthubb\\Cyber-Electro\\Cyber-Electro.csproj",
+        "packagesPath": "C:\\Users\\varas\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\varas\\Documents\\gitthubb\\Cyber-Electro\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Patricio\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\varas\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -35,6 +35,11 @@
           "warnAsError": [
             "NU1605"
           ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
         }
       },
       "frameworks": {
@@ -69,6 +74,18 @@
               "target": "Package",
               "version": "[8.0.5, )",
               "autoReferenced": true
+            },
+            "PdfSharp": {
+              "target": "Package",
+              "version": "[6.1.1, )"
+            },
+            "iTextSharp": {
+              "target": "Package",
+              "version": "[5.5.13.4, )"
+            },
+            "itext7": {
+              "target": "Package",
+              "version": "[7.1.13, )"
             }
           },
           "imports": [
@@ -82,6 +99,12 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.NETCore.App.Runtime.Mono.browser-wasm",
+              "version": "[8.0.5, 8.0.5]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"

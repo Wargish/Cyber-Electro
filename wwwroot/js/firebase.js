@@ -2,7 +2,11 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import { getAuth, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword  } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 import { doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import { getStorage } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js';
 import { addDoc, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import { ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js';
+import { PDFDocument, rgb,StandardFonts  } from 'https://cdn.skypack.dev/pdf-lib'; // Importar pdf-lib para manipular PDFs
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyCpfbHSHQA_0VgrdNCvMQKc1D1DrNa49RM",
@@ -14,23 +18,28 @@ const firebaseConfig = {
   measurementId: "G-9XFW22X5CD"
 };
 
-// Get a reference to the authentication service
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const storage = getStorage(app);
 
-export async function registerUser(email, password) {
+async function descargarPDF(ordenDeCompraId) {
+    // Asegúrate de usar la referencia de storage correcta importada de Firebase
+    const storageRef = getStorage(app);
+
+    // Construye la referencia al archivo PDF específico en el directorio 'orders/'
+    const pdfRef = ref(storageRef, 'ordenes/order-' + ordenDeCompraId + '.pdf');
+
     try {
-        const auth = getAuth();
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-
-        return user.uid; // Devuelve el ID del usuario
+        // Obtiene la URL de descarga del archivo PDF
+        const url = await getDownloadURL(pdfRef);
+        // Abre el PDF en una nueva pestaña del navegador
+        window.open(url, '_blank');
     } catch (error) {
-        console.error("Error registering user: ", error);
+        console.error('Error al descargar el archivo:', error);
     }
 }
 
-window.registerUser = registerUser;
+window.descargarPDF = descargarPDF;
 
 
 export async function saveAdditionalData(uid, nombre, direccion, telefono, email, password) {
@@ -94,28 +103,20 @@ export async function getAdditionalData(uid) {
 
 window.getAdditionalData = getAdditionalData;
 
-async function saveOrder(order) {
+async function saveOrder(order,datosEmpresas,DatosProductosString) {
     try {
-        // Fetch the user ID asynchronously
         const userId = await getUserId();
-
-        // Check if order and user ID are defined
         if (order && userId) {
-            // Set the user ID in the order object
             order.UserId = userId;
-
-            // Store the order in Firestore
             const ordersCollection = collection(db, 'ordenes');
             const docRef = await addDoc(ordersCollection, order);
 
-            // Add the ID of the created document to the order object
+
             order.idOrden = docRef.id;
-
-            // Update the order in Firestore with the new idOrden
+            await generarYGuardarPDF(order,datosEmpresas,DatosProductosString);
             await setDoc(docRef, order);
-
-            // Return the ID of the created document
             return docRef.id;
+            
         } else {
             console.error("Order or UserId is undefined");
         }
@@ -124,6 +125,199 @@ async function saveOrder(order) {
     }
 }
 window.saveOrder = saveOrder;
+
+async function generarYGuardarPDF(orden, datosEmpresas, DatosProductosString) {
+    try {
+        const productLines = DatosProductosString.split('\n').filter(line => line.trim() !== '');
+        const productTableBody = productLines.map(line => {
+            const parts = line.split(',').map(part => part.split(':')[1].trim());
+            return parts;
+        });
+
+        const subtotal = orden.total / 1.19;
+        const iva = orden.total - subtotal;
+
+        // Define las fuentes
+        pdfMake.fonts = {
+            Arial: {
+                normal: 'http://localhost:5245/js/fonts/ARIAL.TTF',
+                bold: 'http://localhost:5245/js/fonts/ARIALBD.TTF',
+                italics: 'http://localhost:5245/js/fonts/ARIALI.TTF',
+                bolditalics: 'http://localhost:5245/js/fonts/ARIALBI.TTF'
+            }
+        };
+
+        const docDefinition = {
+            content: [
+                { text: 'FACTURA', style: 'header' },
+                { text: `Orden de Compra: ${orden.idOrden}`, style: 'subheader' },
+                {
+                    style: 'tableExample',
+                    table: {
+                        widths: [150, '*'],
+                        body: [
+                            [{ text: 'Datos del Cliente', colSpan: 2, style: 'subheader', fillColor: '#ffff00' }, {}],
+                            [{ text: 'Cliente:', fillColor: '#FFFF7F' }, `${orden.nombre}`],
+                            [{ text: 'Fecha:', fillColor: '#FFFF7F' }, `${orden.fecha}`],
+                            [{ text: 'Email:', fillColor: '#FFFF7F' }, `${orden.direccion}`],
+                        ]
+                    },
+                    layout: {
+                        fillColor: function (rowIndex, node, columnIndex) {
+                            return (rowIndex === 0 || rowIndex === node.table.body.length - 1) ? '#eeeeee' : null;
+                        },
+                        hLineWidth: function (i, node) {
+                            return (i === 0 || i === node.table.body.length) ? 2 : 0.5;
+                        },
+                        vLineWidth: function (i) {
+                            return 0.5;
+                        },
+                        hLineColor: function (i, node) {
+                            return (i === 0 || i === node.table.body.length) ? 'black' : 'gray';
+                        },
+                        vLineColor: function (i) {
+                            return 'black';
+                        },
+                        paddingLeft: function (i) {
+                            return i === 0 ? 4 : 4;
+                        },
+                        paddingRight: function (i, node) {
+                            return (i === node.table.widths.length - 1) ? 4 : 4;
+                        }
+                    },
+                    margin: [0, 20]
+                },
+                {
+                    style: 'tableExample',
+                    table: {
+                        widths: [150, '*'],
+                        body: [
+                            [{ text: 'Datos de la Empresa', colSpan: 2, style: 'subheader', fillColor: '#ffff00' }, {}],
+                            [{ text: 'Empresa:', fillColor: '#FFFF7F' }, `${datosEmpresas.nombreEmpresa}`],
+                            [{ text: 'RUT:', fillColor: '#FFFF7F' }, `${datosEmpresas.rutEmpresa}`],
+                            [{ text: 'Dirección:', fillColor: '#FFFF7F' }, `${datosEmpresas.direccionEmpresa}`],
+                            [{ text: 'Teléfono:', fillColor: '#FFFF7F' }, `${datosEmpresas.telefonoEmpresa}`]
+                        ]
+                    },
+                    layout: {
+                        fillColor: function (rowIndex, node, columnIndex) {
+                            return (rowIndex === 0 || rowIndex === node.table.body.length - 1) ? '#eeeeee' : null;
+                        },
+                        hLineWidth: function (i, node) {
+                            return (i === 0 || i === node.table.body.length) ? 2 : 0.5;
+                        },
+                        vLineWidth: function (i) {
+                            return 0.5;
+                        },
+                        hLineColor: function (i, node) {
+                            return (i === 0 || i === node.table.body.length) ? 'black' : 'gray';
+                        },
+                        vLineColor: function (i) {
+                            return 'black';
+                        },
+                        paddingLeft: function (i) {
+                            return i === 0 ? 4 : 4;
+                        },
+                        paddingRight: function (i, node) {
+                            return (i === node.table.widths.length - 1) ? 4 : 4;
+                        }
+                    },
+                    margin: [0, 20]
+                },
+                {
+                    style: 'tableExample',
+                    table: {
+                        headerRows: 1,
+                        widths: [70, '*', 100, 100],
+                        body: [
+                            ['Cantidad', 'Producto', 'Precio Unit.', 'Total'].map(header => ({ text: header, style: 'tableHeader', fillColor: '#ffff00' })),
+                            ...productTableBody.map(row => [
+                                row[0],
+                                row[1],
+                                { text: `$${row[2]}`, alignment: 'right' },
+                                { text: `$${row[3]}`, alignment: 'right' }
+                            ])
+                        ]
+                    },
+                    layout: {
+                        hLineWidth: function (i, node) {
+                            return (i === 0 || i === node.table.body.length) ? 2 : 0.5;
+                        },
+                        vLineWidth: function (i) {
+                            return 0.5;
+                        },
+                        hLineColor: function (i, node) {
+                            return (i === 0 || i === node.table.body.length) ? 'black' : 'gray';
+                        },
+                        vLineColor: function (i) {
+                            return 'black';
+                        },
+                        paddingLeft: function (i) {
+                            return i === 0 ? 4 : 4;
+                        },
+                        paddingRight: function (i, node) {
+                            return (i === node.table.widths.length - 1) ? 4 : 4;
+                        }
+                    },
+                    margin: [0, 20]
+                },
+                {
+                    columns: [
+                        { text: `Subtotal: $${subtotal.toFixed(2)}`, alignment: 'right', width: '*', fontSize: 14, bold: true, margin: [0, 10], color: '#333' },
+                        { text: `IVA (19%): $${iva.toFixed(2)}`, alignment: 'right', width: '*', fontSize: 14, bold: true, margin: [0, 10], color: '#333' },
+                        { text: `Total: $${orden.total.toFixed(2)}`, alignment: 'right', width: '*', fontSize: 16, bold: true, margin: [0, 10], color: '#333' }
+                    ],
+                    margin: [0, 10]
+                }
+            ],
+            styles: {
+                header: {
+                    fontSize: 18,
+                    bold: true,
+                    alignment: 'center',
+                    margin: [0, 0, 0, 10],
+                    color: '#000000'
+                },
+                subheader: {
+                    fontSize: 14,
+                    bold: true,
+                    alignment: 'left',
+                    margin: [0, 10, 0, 5],
+                    color: '#000000'
+                },
+                tableHeader: {
+                    bold: true,
+                    fontSize: 12,
+                    color: '#000000',
+                    fillColor: '#ffff00'
+                },
+                tableExample: {
+                    margin: [0, 5, 0, 15]
+                }
+            },
+            defaultStyle: {
+                font: 'Arial' // Especifica la fuente predeterminada aquí
+            }
+        };
+
+        // Genera el PDF utilizando pdfMake
+        const pdfDocGenerator = pdfMake.createPdf(docDefinition);
+
+        // Convierte el PDF en blob y súbelo a Firebase Storage
+        pdfDocGenerator.getBlob(async (blob) => {
+            const fileName = `order-${orden.idOrden}.pdf`;
+            const fileRef = ref(storage, 'ordenes/' + fileName);
+            await uploadBytes(fileRef, blob);
+            console.log(`PDF generado y guardado como ${fileName}`);
+        });
+
+    } catch (error) {
+        console.error("Error generando o guardando el PDF: ", error);
+    }
+}
+
+window.generarYGuardarPDF = generarYGuardarPDF;
+
 
 async function saveEmpresa(empresas, orderId) {
     try {

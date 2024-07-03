@@ -1,4 +1,8 @@
 ﻿@page "/ordenCompra"
+@using iText.Kernel.Pdf;
+@using iText.Layout;
+@using iText.Layout.Element;
+@using System.IO;
 @inject IJSRuntime JSRuntime
 <PageTitle>Orden de Compra</PageTitle>
 
@@ -65,6 +69,7 @@
                     <td class="docEdit tdDelete" @onclick="() => DeleteItem(item)">X</td>
                 </tr>
             }
+            }
             </tbody>
             <tfoot>
             <tr>
@@ -102,6 +107,16 @@
     private decimal subtotal = 0;
     private decimal tax = 0;
     private decimal total = 0;
+
+    private string ConvertItemsToString()
+{
+    var sb = new System.Text.StringBuilder();
+    foreach (var item in items)
+    {
+        sb.Append($"Cantidad: {item.Quantity}, Nombre: {item.NombreProducto}, Precio: {item.Cost}, Total: {item.Total}\n");
+    }
+    return sb.ToString();
+}
 
     string empresa = "";
     string nombre = "";
@@ -152,12 +167,23 @@
     {
         // Recuperar la ID del usuario del almacenamiento local
         var userId = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userId");
+
         // Recoger los datos adicionales
         var userData = await JSRuntime.InvokeAsync<Dictionary<string, object>>("getAdditionalData", userId);
         var nombre = userData["nombre"].ToString();
         var direccion = userData["direccion"].ToString();
         var telefono = userData["telefono"].ToString();
-        
+
+
+            
+
+         var datosEmpresas = new {
+            NombreEmpresa = nombreEmpresa,
+            RutEmpresa = rutEmpresa,
+            DireccionEmpresa = direccionEmpresa,
+            TelefonoEmpresa = telefonoEmpresa
+        };
+
         var empresas = new Empresa
         {
             NombreEmpresa = nombreEmpresa,
@@ -175,15 +201,16 @@
             Total = total,
             Fecha = DateOnly.FromDateTime(DateTime.Now)
         };
-        var ordenId = await JSRuntime.InvokeAsync<string>("saveOrder", orden);
-        await JSRuntime.InvokeVoidAsync("saveEmpresa", empresas, ordenId);
-        await JSRuntime.InvokeVoidAsync("alertaSucces", "Compra finalizada con éxito!");
 
+         var DatosProductosString = ConvertItemsToString();
+        
+        var ordenId = await JSRuntime.InvokeAsync<string>("saveOrder", orden,datosEmpresas,DatosProductosString);
+        await JSRuntime.InvokeVoidAsync("saveEmpresa", empresas, ordenId);
+        // Mostrar alerta de éxito
+        await JSRuntime.InvokeVoidAsync("alertaSucces", "Compra finalizada con éxito!");
     }
-    
-    
+
     // protected async
-    
     protected override async Task OnInitializedAsync()
     {
         // Recuperar la ID del usuario del almacenamiento local
@@ -208,7 +235,7 @@
     
     public class Productos
     {
-        public int Quantity { get; set; } = 0;
+        public int Quantity { get; set; } = 1;
         public string NombreProducto { get; set; } = "";
         public decimal Cost { get; set; } = 0;
         public decimal Total { get; set; } = 0;
@@ -221,5 +248,5 @@
         public string DireccionEmpresa { get; set; } = "";
         public string TelefonoEmpresa { get; set; } = "";
     }
-
+}
 }
