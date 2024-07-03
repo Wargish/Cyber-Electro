@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\varas\\Documents\\giyhub\\Cyber-Electro\\Cyber-Electro.csproj": {}
+    "C:\\Users\\varas\\Documents\\gitthubb\\Cyber-Electro\\Cyber-Electro.csproj": {}
   },
   "projects": {
-    "C:\\Users\\varas\\Documents\\giyhub\\Cyber-Electro\\Cyber-Electro.csproj": {
+    "C:\\Users\\varas\\Documents\\gitthubb\\Cyber-Electro\\Cyber-Electro.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\varas\\Documents\\giyhub\\Cyber-Electro\\Cyber-Electro.csproj",
+        "projectUniqueName": "C:\\Users\\varas\\Documents\\gitthubb\\Cyber-Electro\\Cyber-Electro.csproj",
         "projectName": "Cyber-Electro",
-        "projectPath": "C:\\Users\\varas\\Documents\\giyhub\\Cyber-Electro\\Cyber-Electro.csproj",
+        "projectPath": "C:\\Users\\varas\\Documents\\gitthubb\\Cyber-Electro\\Cyber-Electro.csproj",
         "packagesPath": "C:\\Users\\varas\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\varas\\Documents\\giyhub\\Cyber-Electro\\obj\\",
+        "outputPath": "C:\\Users\\varas\\Documents\\gitthubb\\Cyber-Electro\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\varas\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -74,6 +74,14 @@
               "target": "Package",
               "version": "[8.0.5, )",
               "autoReferenced": true
+            },
+            "PdfSharp": {
+              "target": "Package",
+              "version": "[6.1.1, )"
+            },
+            "iTextSharp": {
+              "target": "Package",
+              "version": "[5.5.13.4, )"
             },
             "itext7": {
               "target": "Package",

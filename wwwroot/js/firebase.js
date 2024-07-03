@@ -5,6 +5,10 @@ import { doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.2/
 import { getStorage } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js';
 import { addDoc, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import { ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js';
+import { PDFDocument, rgb } from 'https://cdn.skypack.dev/pdf-lib'; // Importar pdf-lib para manipular PDFs
+
+
+
 const firebaseConfig = {
   apiKey: "AIzaSyCpfbHSHQA_0VgrdNCvMQKc1D1DrNa49RM",
   authDomain: "cyber-electro-d346e.firebaseapp.com",
@@ -15,7 +19,6 @@ const firebaseConfig = {
   measurementId: "G-9XFW22X5CD"
 };
 
-// Get a reference to the authentication service
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
@@ -110,11 +113,6 @@ async function saveOrder(order) {
             const docRef = await addDoc(ordersCollection, order);
             order.idOrden = docRef.id;
 
-            // Generar y guardar el PDF, y obtener el identificador o ruta del PDF
-            const pdfId = await generateAndSavePDF(order);
-            // Agregar el campo `pdf` al objeto `order`
-            order.pdf = pdfId;
-
             await setDoc(docRef, order);
             return docRef.id;
         } else {
@@ -125,31 +123,74 @@ async function saveOrder(order) {
     }
 }
 window.saveOrder = saveOrder;
-async function generateAndSavePDF(order) {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    doc.text(JSON.stringify(order, null, 2), 10, 10);
 
+
+export async function saveOrderAndGeneratePDF(order) {
     try {
-        // Convert the PDF to Blob directly without using .then
-        const blob = doc.output('blob');
+        // Guardar la orden en Firestore
+        const userId = await getUserId(); // Suponiendo que tienes una función para obtener el ID de usuario
+        if (order && userId) {
+            order.UserId = userId;
+            const ordersCollection = collection(db, 'ordenes');
+            const docRef = await addDoc(ordersCollection, order);
+            order.idOrden = docRef.id;
 
-        const pdfName = `order-${order.idOrden}.pdf`;
+            // Generar y guardar el PDF
+            await generarYGuardarPDF(order);
 
-        // Upload the Blob to Firebase Storage
-        const storageRef = ref(storage, `orders/${pdfName}`);
-        const snapshot = await uploadBytes(storageRef, blob);
-
-        // Get the public URL of the file
-        const pdfUrl = await getDownloadURL(snapshot.ref);
-
-        // Implement the logic to update the Firestore document with the PDF URL
-        // For example:
-        // await updateDoc(doc(db, 'ordenes', order.idOrden), { pdf: pdfUrl });
-
-        return pdfUrl; // Return the PDF URL
+            return docRef.id;
+        } else {
+            console.error("Order or UserId is undefined");
+        }
     } catch (error) {
-        console.error("Error generating or uploading PDF: ", error);
+        console.error("Error saving order and generating PDF: ", error);
+    }
+}
+
+window.saveOrderAndGeneratePDF = saveOrderAndGeneratePDF;
+
+// Función para generar y guardar el PDF en Firebase Storage
+// Función para generar y guardar el PDF en Firebase Storage
+async function generarYGuardarPDF(orden) {
+    try {
+        // Crear un nuevo documento PDF
+        const doc = await PDFDocument.create();
+        
+        // Crear una nueva página
+        const page = doc.addPage();
+        
+        // Definir el contenido inicial del PDF con la información de la orden
+        let content = `Orden de Compra:
+            - Fecha: ${orden.fecha}
+            - ID de Orden: ${orden.idOrden}
+            - Usuario ID: ${orden.UserId}
+            - Dirección de Email: ${orden.direccion}
+            - Total: ${orden.total}
+            
+            Items:\n`;
+        
+        // Agregar cada item a la lista en el PDF
+        orden.items.forEach((item, index) => {
+            content += `\t${index + 1}. ${item.nombre} - Cantidad: ${item.cantidad} - Precio unitario: ${item.precio}\n`;
+        });
+
+        // Añadir contenido al documento
+        page.drawText(content, {
+            x: 50,
+            y: 500,
+            size: 12,
+            color: rgb(0, 0, 0),
+        });
+        
+        // Guardar el PDF en el storage de Firebase
+        const pdfBytes = await doc.save();
+        const fileName = `order-${orden.idOrden}.pdf`;
+        const fileRef = ref(storage, 'ordenes/' + fileName); // Directorio 'ordenes' dentro del storage
+        await uploadBytes(fileRef, pdfBytes);
+
+        console.log(`PDF generado y guardado como ${fileName}`);
+    } catch (error) {
+        console.error("Error generating or saving PDF: ", error);
     }
 }
 

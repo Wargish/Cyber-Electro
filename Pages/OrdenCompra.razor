@@ -69,6 +69,7 @@
                     <td class="docEdit tdDelete" @onclick="() => DeleteItem(item)">X</td>
                 </tr>
             }
+            }
             </tbody>
             <tfoot>
             <tr>
@@ -152,68 +153,44 @@
         CalculateTotal();
     }
 
-  private async Task FinalizarCompra()
-{
-    // Recuperar la ID del usuario del almacenamiento local
-    var userId = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userId");
-    // Recoger los datos adicionales
-    var userData = await JSRuntime.InvokeAsync<Dictionary<string, object>>("getAdditionalData", userId);
-    var nombre = userData["nombre"].ToString();
-    var direccion = userData["direccion"].ToString();
-    var telefono = userData["telefono"].ToString();
-    
-    var empresas = new Empresa
+    private async Task FinalizarCompra()
     {
-        NombreEmpresa = nombreEmpresa,
-        RutEmpresa = rutEmpresa,
-        DireccionEmpresa = direccionEmpresa,
-        TelefonoEmpresa = telefonoEmpresa
-    };
+        // Recuperar la ID del usuario del almacenamiento local
+        var userId = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userId");
 
-    var orden = new OrdenDeCompra
-    {
-        Nombre = nombre,
-        Direccion = direccion,
-        Telefono = telefono,
-        Items = items,
-        Total = total,
-        Fecha = DateOnly.FromDateTime(DateTime.Now)
-    };
-    var ordenId = await JSRuntime.InvokeAsync<string>("saveOrder", orden);
-    await JSRuntime.InvokeVoidAsync("saveEmpresa", empresas, ordenId);
+        // Recoger los datos adicionales
+        var userData = await JSRuntime.InvokeAsync<Dictionary<string, object>>("getAdditionalData", userId);
+        var nombre = userData["nombre"].ToString();
+        var direccion = userData["direccion"].ToString();
+        var telefono = userData["telefono"].ToString();
 
-    // Generar PDF
-    byte[] pdfBytes = GenerarPDFConDatosDeCompra(nombre, direccion, telefono, empresas, orden);
-
-    // Aquí deberías guardar el PDF en tu base de datos o sistema de archivos
-    // Por ejemplo, guardar el array de bytes en una base de datos o un sistema de archivos
-    // Este paso depende de tu implementación específica
-
-    await JSRuntime.InvokeVoidAsync("alertaSucces", "Compra finalizada con éxito!");
-}
-
-private byte[] GenerarPDFConDatosDeCompra(string nombre, string direccion, string telefono, Empresa empresas, OrdenDeCompra orden)
-{
-    using (MemoryStream memoryStream = new MemoryStream())
-    {
-        using (PdfWriter writer = new PdfWriter(memoryStream))
+        var empresas = new Empresa
         {
-            using (PdfDocument pdf = new PdfDocument(writer))
-            {
-                Document document = new Document(pdf);
-                document.Add(new Paragraph($"Nombre: {nombre}"));
-                document.Add(new Paragraph($"Dirección: {direccion}"));
-                document.Add(new Paragraph($"Teléfono: {telefono}"));
-                // Agrega aquí más información según sea necesario
-            }
-        }
-        return memoryStream.ToArray();
+            NombreEmpresa = nombreEmpresa,
+            RutEmpresa = rutEmpresa,
+            DireccionEmpresa = direccionEmpresa,
+            TelefonoEmpresa = telefonoEmpresa
+        };
+
+        var orden = new OrdenDeCompra
+        {
+            Nombre = nombre,
+            Direccion = direccion,
+            Telefono = telefono,
+            Items = items,
+            Total = total,
+            Fecha = DateOnly.FromDateTime(DateTime.Now)
+        };
+        
+        var ordenId = await JSRuntime.InvokeAsync<string>("saveOrder", orden);
+        await JSRuntime.InvokeVoidAsync("saveEmpresa", empresas, ordenId);
+        await JSRuntime.InvokeVoidAsync("saveOrderAndGeneratePDF", orden);
+
+        // Mostrar alerta de éxito
+        await JSRuntime.InvokeVoidAsync("alertaSucces", "Compra finalizada con éxito!");
     }
-}
-    
-    
+
     // protected async
-    
     protected override async Task OnInitializedAsync()
     {
         // Recuperar la ID del usuario del almacenamiento local
@@ -238,7 +215,7 @@ private byte[] GenerarPDFConDatosDeCompra(string nombre, string direccion, strin
     
     public class Productos
     {
-        public int Quantity { get; set; } = 0;
+        public int Quantity { get; set; } = 1;
         public string NombreProducto { get; set; } = "";
         public decimal Cost { get; set; } = 0;
         public decimal Total { get; set; } = 0;
@@ -251,5 +228,4 @@ private byte[] GenerarPDFConDatosDeCompra(string nombre, string direccion, strin
         public string DireccionEmpresa { get; set; } = "";
         public string TelefonoEmpresa { get; set; } = "";
     }
-
 }

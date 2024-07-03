@@ -10,8 +10,10 @@
         <PackageReference Include="itext7" Version="7.1.13" />
         <PackageReference Include="FirebaseAdmin" Version="3.0.0" />
         <PackageReference Include="FirebaseAuthentication.net" Version="4.1.0" />
+        <PackageReference Include="iTextSharp" Version="5.5.13.4" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.5" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.5" PrivateAssets="all" />
+        <PackageReference Include="PdfSharp" Version="6.1.1" />
     </ItemGroup>
 
 </Project>
