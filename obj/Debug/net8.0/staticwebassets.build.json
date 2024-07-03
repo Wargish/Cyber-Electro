@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "XFDgkJJopWOc/FyAoZDJC3XRB5NchKHvO6Qxg4JgF78=",
+  "Hash": "LkacIeJIcxU+wtJdRfJoobbnFcGCdnaI8ZkPOgjoiwc=",
   "Source": "Cyber-Electro",
   "BasePath": "/",
   "Mode": "Root",
@@ -9287,6 +9287,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\icon-192.png"
+    },
+    {
+      "Identity": "C:\\Users\\varas\\Documents\\gitthubb\\Cyber-Electro\\wwwroot\\IMG\\logo.jpg",
+      "SourceId": "Cyber-Electro",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\varas\\Documents\\gitthubb\\Cyber-Electro\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "IMG/logo.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\IMG\\logo.jpg"
     },
     {
       "Identity": "C:\\Users\\varas\\Documents\\gitthubb\\Cyber-Electro\\wwwroot\\index.html",

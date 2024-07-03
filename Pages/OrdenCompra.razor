@@ -108,6 +108,16 @@
     private decimal tax = 0;
     private decimal total = 0;
 
+    private string ConvertItemsToString()
+{
+    var sb = new System.Text.StringBuilder();
+    foreach (var item in items)
+    {
+        sb.Append($"Cantidad: {item.Quantity}, Nombre: {item.NombreProducto}, Precio: {item.Cost}, Total: {item.Total}\n");
+    }
+    return sb.ToString();
+}
+
     string empresa = "";
     string nombre = "";
     string direccion = "";
@@ -167,7 +177,7 @@
 
             
 
-         var datosExtras = new {
+         var datosEmpresas = new {
             NombreEmpresa = nombreEmpresa,
             RutEmpresa = rutEmpresa,
             DireccionEmpresa = direccionEmpresa,
@@ -191,8 +201,10 @@
             Total = total,
             Fecha = DateOnly.FromDateTime(DateTime.Now)
         };
+
+         var DatosProductosString = ConvertItemsToString();
         
-        var ordenId = await JSRuntime.InvokeAsync<string>("saveOrder", orden,datosExtras);
+        var ordenId = await JSRuntime.InvokeAsync<string>("saveOrder", orden,datosEmpresas,DatosProductosString);
         await JSRuntime.InvokeVoidAsync("saveEmpresa", empresas, ordenId);
         // Mostrar alerta de éxito
         await JSRuntime.InvokeVoidAsync("alertaSucces", "Compra finalizada con éxito!");

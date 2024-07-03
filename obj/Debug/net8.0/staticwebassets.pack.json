@@ -13,6 +13,10 @@
       "PackagePath": "staticwebassets\\Cyber-Electro.styles.css"
     },
     {
+      "Id": "C:\\Users\\varas\\Documents\\gitthubb\\Cyber-Electro\\wwwroot\\IMG\\logo.jpg",
+      "PackagePath": "staticwebassets\\IMG\\logo.jpg"
+    },
+    {
       "Id": "C:\\Users\\varas\\Documents\\gitthubb\\Cyber-Electro\\wwwroot\\css\\Logincss.css",
       "PackagePath": "staticwebassets\\css\\Logincss.css"
     },

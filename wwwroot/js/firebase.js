@@ -5,8 +5,7 @@ import { doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.2/
 import { getStorage } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js';
 import { addDoc, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import { ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js';
-import { PDFDocument, rgb } from 'https://cdn.skypack.dev/pdf-lib'; // Importar pdf-lib para manipular PDFs
-
+import { PDFDocument, rgb,StandardFonts  } from 'https://cdn.skypack.dev/pdf-lib'; // Importar pdf-lib para manipular PDFs
 
 
 const firebaseConfig = {
@@ -104,7 +103,7 @@ export async function getAdditionalData(uid) {
 
 window.getAdditionalData = getAdditionalData;
 
-async function saveOrder(order,datosExtras,datosItems) {
+async function saveOrder(order,datosEmpresas,DatosProductosString) {
     try {
         const userId = await getUserId();
         if (order && userId) {
@@ -114,7 +113,7 @@ async function saveOrder(order,datosExtras,datosItems) {
 
 
             order.idOrden = docRef.id;
-            await generarYGuardarPDF(order,datosExtras,datosItems);
+            await generarYGuardarPDF(order,datosEmpresas,DatosProductosString);
             await setDoc(docRef, order);
             return docRef.id;
             
@@ -127,69 +126,142 @@ async function saveOrder(order,datosExtras,datosItems) {
 }
 window.saveOrder = saveOrder;
 
-// Función para generar y guardar el PDF en Firebase Storage
-// Función para generar y guardar el PDF en Firebase Storage
-// Función para generar y guardar el PDF en Firebase Storage
-async function generarYGuardarPDF(orden, datosExtras,datosItems) {
+async function generarYGuardarPDF(orden, datosEmpresas, DatosProductosString) {
     try {
-        // Crear un nuevo documento PDF
-        const doc = await PDFDocument.create();
-        
-        // Crear una nueva página
-        const page = doc.addPage();
-        
-        // Definir el contenido inicial del PDF con la información de la orden
-        let content = `Orden de Compra:
-            - Fecha: ${orden.fecha}
-            - ID de Orden: ${orden.idOrden}
-            - Usuario ID: ${orden.UserId}
-            - Dirección de Email: ${orden.direccion}
-            - Total: ${orden.total}
-            
-            Items:\n`;
-        
-        // Agregar cada item a la lista en el PDF
-        orden.items.forEach((item, index) => {
-            content += `\t${index + 1}. ${item.NombreProducto} - Cantidad: ${item.Quantity} - Precio unitario: ${item.Cost}\n`;
+        // Convertir el string de DatosProductos en líneas
+        const productLines = DatosProductosString.split('\n').filter(line => line.trim() !== '');
+
+        // Crear filas de la tabla de productos a partir de las líneas
+        const productTableBody = productLines.map(line => {
+            const parts = line.split(',').map(part => part.split(':')[1].trim());
+            return parts;
         });
 
-        // Agregar datos extras al contenido del PDF
-        if (datosExtras) {
-            content += `
-            Datos adicionales:
-            - Nombre Empresa: ${datosExtras.nombreEmpresa}
-            - Rut Empresa: ${datosExtras.rutEmpresa}
-            - Dirección Empresa: ${datosExtras.direccionEmpresa}
-            - Teléfono Empresa: ${datosExtras.telefonoEmpresa}
-            `;
-        }
+        // Calcular el subtotal (total sin IVA)
+        const subtotal = orden.total / 1.19; // IVA es el 19%, entonces subtotal = total / 1.19
+        const iva = orden.total - subtotal; // IVA es la diferencia entre total y subtotal
 
-        if (datosItems) {
-            content += `
-            Datos adicionales:
-            - Nombre Producto: ${datosItems.NombreProducto}
-            `;
-        }
+        // Definir el contenido del PDF
+        const docDefinition = {
+            content: [
+                // Título y tipo de documento
+                { text: 'FACTURA', style: 'header', alignment: 'center' },
+                { text: 'Orden de Compra', style: 'subheader', alignment: 'center' },
+                
+                // Información de la orden
+                {
+                    columns: [
+                        {
+                            width: 'auto',
+                            stack: [
+                                { text: `Nombre Cliente: ${orden.nombre}` },
+                                { text: `ID de Orden: ${orden.idOrden}` },
+                                { text: `Fecha: ${orden.fecha}` },
+                                { text: `Dirección de Email: ${orden.direccion}` }
+                            ]
+                        },
+                        {
+                            width: '*',
+                            stack: datosEmpresas ? [
+                                { text: 'Datos Empresa', style: 'subheader' },
+                                { text: `Nombre: ${datosEmpresas.nombreEmpresa}` },
+                                { text: `RUT: ${datosEmpresas.rutEmpresa}` },
+                                { text: `Dirección: ${datosEmpresas.direccionEmpresa}` },
+                                { text: `Teléfono: ${datosEmpresas.telefonoEmpresa}` }
+                            ] : []
+                        }
+                    ],
+                    margin: [0, 20]
+                },
+                
+                // Tabla de productos
+                {
+                    table: {
+                        headerRows: 1,
+                        widths: ['auto', '*', 'auto', 'auto'],
+                        body: [
+                            // Cabecera de la tabla
+                            [
+                                { text: 'Cantidad', style: 'tableHeader' },
+                                { text: 'Nombre Producto', style: 'tableHeader' },
+                                { text: 'Precio Unitario', style: 'tableHeader', alignment: 'right' },
+                                { text: 'Total', style: 'tableHeader', alignment: 'right' }
+                            ],
+                            // Filas de la tabla
+                            ...productTableBody.map(row => [
+                                row[0], // Cantidad
+                                { text: row[1], alignment: 'left' }, // Nombre
+                                { text: `$${row[2]}`, alignment: 'right' }, // Precio Unitario
+                                { text: `$${row[3]}`, alignment: 'right' } // Total
+                            ])
+                        ]
+                    },
+                    margin: [0, 20]
+                },
+                
+                // Subtotal
+                {
+                    text: `Subtotal: $${subtotal.toFixed(2)}`,
+                    alignment: 'right',
+                    margin: [0, 10]
+                },
 
-        // Añadir contenido al documento
-        page.drawText(content, {
-            x: 50,
-            y: 500,
-            size: 12,
-            color: rgb(0, 0, 0),
+                // IVA (19%)
+                {
+                    text: `IVA (19%): $${iva.toFixed(2)}`,
+                    alignment: 'right',
+                    margin: [0, 5]
+                },
+
+                // Total de la orden
+                {
+                    text: `Total: $${orden.total.toFixed(2)}`,
+                    style: 'total',
+                    alignment: 'right',
+                    margin: [0, 10]
+                }
+            ],
+            styles: {
+                header: {
+                    fontSize: 18,
+                    bold: true,
+                    margin: [0, 10, 0, 10]
+                },
+                subheader: {
+                    fontSize: 14,
+                    margin: [0, 5, 0, 5]
+                },
+                tableHeader: {
+                    bold: true,
+                    fontSize: 13,
+                    color: 'black',
+                    fillColor: '#eeeeee'
+                },
+                total: {
+                    fontSize: 14,
+                    bold: true
+                }
+            }
+        };
+
+        // Generar el PDF y obtener el blob
+        const pdfDocGenerator = pdfMake.createPdf(docDefinition);
+        pdfDocGenerator.getBlob(async (blob) => {
+            // Guardar el PDF en el storage de Firebase
+            const fileName = `order-${orden.idOrden}.pdf`;
+            const fileRef = ref(storage, 'ordenes/' + fileName); // Directorio 'ordenes' dentro del storage
+            await uploadBytes(fileRef, blob);
+            console.log(`PDF generado y guardado como ${fileName}`);
         });
-        
-        // Guardar el PDF en el storage de Firebase
-        const pdfBytes = await doc.save();
-        const fileName = `order-${orden.idOrden}.pdf`;
-        const fileRef = ref(storage, 'ordenes/' + fileName); // Directorio 'ordenes' dentro del storage
-        await uploadBytes(fileRef, pdfBytes);
 
-        console.log(`PDF generado y guardado como ${fileName}`);
     } catch (error) {
-        console.error("Error generating or saving PDF: ", error);
+        console.error("Error generando o guardando el PDF: ", error);
     }
 }
+
+
+
+
 
 window.generarYGuardarPDF = generarYGuardarPDF;
 
