@@ -28,7 +28,7 @@ async function descargarPDF(ordenDeCompraId) {
     const storageRef = getStorage(app);
 
     // Construye la referencia al archivo PDF específico en el directorio 'orders/'
-    const pdfRef = ref(storageRef, 'orders/order-' + ordenDeCompraId + '.pdf');
+    const pdfRef = ref(storageRef, 'ordenes/order-' + ordenDeCompraId + '.pdf');
 
     try {
         // Obtiene la URL de descarga del archivo PDF
@@ -104,17 +104,20 @@ export async function getAdditionalData(uid) {
 
 window.getAdditionalData = getAdditionalData;
 
-async function saveOrder(order) {
+async function saveOrder(order,datosExtras,datosItems) {
     try {
         const userId = await getUserId();
         if (order && userId) {
             order.UserId = userId;
             const ordersCollection = collection(db, 'ordenes');
             const docRef = await addDoc(ordersCollection, order);
-            order.idOrden = docRef.id;
 
+
+            order.idOrden = docRef.id;
+            await generarYGuardarPDF(order,datosExtras,datosItems);
             await setDoc(docRef, order);
             return docRef.id;
+            
         } else {
             console.error("Order or UserId is undefined");
         }
@@ -124,34 +127,10 @@ async function saveOrder(order) {
 }
 window.saveOrder = saveOrder;
 
-
-export async function saveOrderAndGeneratePDF(order) {
-    try {
-        // Guardar la orden en Firestore
-        const userId = await getUserId(); // Suponiendo que tienes una función para obtener el ID de usuario
-        if (order && userId) {
-            order.UserId = userId;
-            const ordersCollection = collection(db, 'ordenes');
-            const docRef = await addDoc(ordersCollection, order);
-            order.idOrden = docRef.id;
-
-            // Generar y guardar el PDF
-            await generarYGuardarPDF(order);
-
-            return docRef.id;
-        } else {
-            console.error("Order or UserId is undefined");
-        }
-    } catch (error) {
-        console.error("Error saving order and generating PDF: ", error);
-    }
-}
-
-window.saveOrderAndGeneratePDF = saveOrderAndGeneratePDF;
-
 // Función para generar y guardar el PDF en Firebase Storage
 // Función para generar y guardar el PDF en Firebase Storage
-async function generarYGuardarPDF(orden) {
+// Función para generar y guardar el PDF en Firebase Storage
+async function generarYGuardarPDF(orden, datosExtras,datosItems) {
     try {
         // Crear un nuevo documento PDF
         const doc = await PDFDocument.create();
@@ -171,8 +150,26 @@ async function generarYGuardarPDF(orden) {
         
         // Agregar cada item a la lista en el PDF
         orden.items.forEach((item, index) => {
-            content += `\t${index + 1}. ${item.nombre} - Cantidad: ${item.cantidad} - Precio unitario: ${item.precio}\n`;
+            content += `\t${index + 1}. ${item.NombreProducto} - Cantidad: ${item.Quantity} - Precio unitario: ${item.Cost}\n`;
         });
+
+        // Agregar datos extras al contenido del PDF
+        if (datosExtras) {
+            content += `
+            Datos adicionales:
+            - Nombre Empresa: ${datosExtras.nombreEmpresa}
+            - Rut Empresa: ${datosExtras.rutEmpresa}
+            - Dirección Empresa: ${datosExtras.direccionEmpresa}
+            - Teléfono Empresa: ${datosExtras.telefonoEmpresa}
+            `;
+        }
+
+        if (datosItems) {
+            content += `
+            Datos adicionales:
+            - Nombre Producto: ${datosItems.NombreProducto}
+            `;
+        }
 
         // Añadir contenido al documento
         page.drawText(content, {
@@ -193,6 +190,8 @@ async function generarYGuardarPDF(orden) {
         console.error("Error generating or saving PDF: ", error);
     }
 }
+
+window.generarYGuardarPDF = generarYGuardarPDF;
 
 
 async function saveEmpresa(empresas, orderId) {

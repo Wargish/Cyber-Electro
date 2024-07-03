@@ -164,6 +164,16 @@
         var direccion = userData["direccion"].ToString();
         var telefono = userData["telefono"].ToString();
 
+
+            
+
+         var datosExtras = new {
+            NombreEmpresa = nombreEmpresa,
+            RutEmpresa = rutEmpresa,
+            DireccionEmpresa = direccionEmpresa,
+            TelefonoEmpresa = telefonoEmpresa
+        };
+
         var empresas = new Empresa
         {
             NombreEmpresa = nombreEmpresa,
@@ -182,10 +192,8 @@
             Fecha = DateOnly.FromDateTime(DateTime.Now)
         };
         
-        var ordenId = await JSRuntime.InvokeAsync<string>("saveOrder", orden);
+        var ordenId = await JSRuntime.InvokeAsync<string>("saveOrder", orden,datosExtras);
         await JSRuntime.InvokeVoidAsync("saveEmpresa", empresas, ordenId);
-        await JSRuntime.InvokeVoidAsync("saveOrderAndGeneratePDF", orden);
-
         // Mostrar alerta de éxito
         await JSRuntime.InvokeVoidAsync("alertaSucces", "Compra finalizada con éxito!");
     }
@@ -228,4 +236,5 @@
         public string DireccionEmpresa { get; set; } = "";
         public string TelefonoEmpresa { get; set; } = "";
     }
+}
 }
