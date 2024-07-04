@@ -399,13 +399,14 @@ window.updateOrderStatusWithSetDoc = async function(orderId, newStatus) {
 }
 
 window.updateOrderStatusWithDelivery = async function (orderId, newStatus) {
+    let imageUrl = null
     console.log(`updateOrderStatusWithDelivery called with orderId: ${orderId}, newStatus: ${newStatus}`);
     try {
         const {value: formValues} = await Swal.fire({
-            title: "Enter your address and RUT",
+            title: "Ingresa tu Direccion y RUT",
             html:
-                '<input id="swal-input1" class="swal2-input" placeholder="Your address">' +
-                '<input id="swal-input2" class="swal2-input" placeholder="Your RUT">',
+                '<input id="swal-input1" class="swal2-input" placeholder="Direccion">' +
+                '<input id="swal-input2" class="swal2-input" placeholder="Rut">',
             focusConfirm: false,
             preConfirm: () => {
                 return [
@@ -424,8 +425,24 @@ window.updateOrderStatusWithDelivery = async function (orderId, newStatus) {
             await setDoc(orderRef, {estado: newStatus}, {merge: true});
             console.log(`Order ${orderId} updated to status ${newStatus}`);
 
+            const { value: file } = await Swal.fire({
+                title: "Select image",
+                input: "file",
+                inputAttributes: {
+                    "accept": "image/*",
+                    "aria-label": "Upload your profile picture"
+                }
+            });
+
+            if (file) {
+                const storageRef = ref(storage, `orders/${orderId}/${file.name}`);
+                await uploadBytes(storageRef, file);
+                imageUrl = await getDownloadURL(storageRef);
+                console.log(`File ${file.name} uploaded to Firebase Storage.`);
+            }
+
             if (newStatus === "Entregado") {
-                await handleDeliveredOrder(orderId, direccion, rut);
+                await handleDeliveredOrder(orderId, direccion, rut,imageUrl);
             } else {
                 console.log(`No additional processing required for status ${newStatus}`);
             }
@@ -444,20 +461,20 @@ async function handleRejectedOrder(orderId, motivoRechazo) {
     if (existingRechazo) {
         await setDoc(doc(db, 'historialRechazos', existingRechazo.id), {
             motivo: motivoRechazo,
-            fecha: serverTimestamp()
+            fecha: new Date().toISOString()
         }, {merge: true});
         console.log(`Rechazo actualizado en el historial para la orden ${orderId}`);
     } else {
         await addDoc(historialRechazosCollection, {
             motivo: motivoRechazo,
-            fecha: serverTimestamp(),
+            fecha: new Date().toISOString(),
             idOrden: orderId
         });
         console.log(`Rechazo registrado en el historial para la orden ${orderId}`);
     }
 }
 
-async function handleDeliveredOrder(orderId, direccion, rut) {
+async function handleDeliveredOrder(orderId, direccion, rut,imageUrl) {
     const entregasCollection = collection(db, 'entregas');
     const q = query(entregasCollection, where("idOrden", "==", orderId));
     const querySnapshot = await getDocs(q);
@@ -468,38 +485,19 @@ async function handleDeliveredOrder(orderId, direccion, rut) {
             direccion: direccion,
             rut: rut,
             idOrden: orderId,
-            fecha: serverTimestamp()
+            imageUrl: imageUrl, // Guarda la URL de la imagen en la base de datos
+            fecha: new Date().toISOString()
         }, {merge: true});
-        console.log(`Rechazo actualizado en el historial para la orden ${orderId}`);
+        console.log(`Entrega actualizado en el historial para la orden ${orderId}`);
     } else {
         await addDoc(entregasCollection, {
             direccion: direccion,
             rut: rut,
             idOrden: orderId,
-            fecha: serverTimestamp(),
+            imageUrl: imageUrl, // Guarda la URL de la imagen en la base de datos
+            fecha: new Date().toISOString()
         });
-        console.log(`Rechazo registrado en el historial para la orden ${orderId}`);
-    }
-}
-
-window.getHistorialRechazos = async function (orderId) {
-    try {
-        // Get a reference to the historialRechazos collection
-        const historialRechazosCollection = collection(db, 'historialRechazos');
-
-        // Create a query against the collection
-        const q = query(historialRechazosCollection, where("idOrden", "==", orderId));
-
-        // Get all documents that match the query
-        const querySnapshot = await getDocs(q);
-
-        // Map each document to its data
-        const historialRechazos = querySnapshot.docs.map(doc => doc.data());
-
-        // Return the list of rechazos
-        return historialRechazos;
-    } catch (error) {
-        console.error("Error getting historial de rechazos: ", error);
+        console.log(`Entrega registrado en el historial para la orden ${orderId}`);
     }
 }
 
@@ -532,6 +530,48 @@ export async function logoutUser() {
         await signOut(auth);
     } catch (error) {
         console.error("Error signing out: ", error);
+    }
+}
+
+window.getDeliveryDetails = async function (orderId) {
+    try {
+        // Get a reference to the entregas collection
+        const entregasCollection = collection(db, 'entregas');
+
+        // Create a query against the collection
+        const q = query(entregasCollection, where("idOrden", "==", orderId));
+
+        // Get all documents that match the query
+        const querySnapshot = await getDocs(q);
+
+        // Map each document to its data
+        const entregas = querySnapshot.docs.map(doc => doc.data());
+
+        // Return the first entrega (there should only be one)
+        return entregas[0];
+    } catch (error) {
+        console.error("Error getting entrega: ", error);
+    }
+}
+
+window.getHistorialRechazos = async function (orderId) {
+    try {
+        // Get a reference to the historialRechazos collection
+        const historialRechazosCollection = collection(db, 'historialRechazos');
+
+        // Create a query against the collection
+        const q = query(historialRechazosCollection, where("idOrden", "==", orderId));
+
+        // Get all documents that match the query
+        const querySnapshot = await getDocs(q);
+
+        // Map each document to its data
+        const historialRechazos = querySnapshot.docs.map(doc => doc.data());
+
+        // Return the list of rechazos
+        return historialRechazos[0];
+    } catch (error) {
+        console.error("Error getting historial de rechazos: ", error);
     }
 }
 

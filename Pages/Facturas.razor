@@ -3,69 +3,168 @@
 
 <h3>Facturas</h3>
 
-
 @foreach (var factura in facturas)
 {
-<div>
-    <h4>@factura.idOrden</h4>
-    <p>Estado: @factura.estado</p>
-    <select @onchange="@(e => UpdateOrderStatusAsync(factura.idOrden, e.Value.ToString()))">
-        <option value="">Selecciona un estado</option>
-        <option value="Entregado">Entregado</option>
-        <option value="Rechazado">Rechazado</option>
-    </select>
-</div>
+    <div class="card mb-3">
+        <div class="card-header">
+            <h4 class="mb-0">@factura.idOrden</h4>
+        </div>
+        <div class="card-body">
+            <p class="mb-1"><strong>Estado:</strong> @factura.estado</p>
+            <select class="form-select" @onchange="@(e => UpdateOrderStatusAsync(factura.idOrden, e.Value.ToString()))">
+                <option value="">Selecciona un estado</option>
+                <option value="Entregado">Entregado</option>
+                <option value="Rechazado">Rechazado</option>
+            </select>
+            @if (factura.estado == "Entregado")
+            {
+                <button class="btn btn-primary mt-2" @onclick="() => GetDeliveryDetailsAsync(factura.idOrden)">Mostrar Detalles de Entrega</button>
+            }
+            @if (factura.estado == "Rechazado")
+            {
+                <button class="btn btn-primary mt-2" @onclick="() => GetRejectionDetailsAsync(factura.idOrden)">Mostrar Detalles de Rechazo</button>
+            }
+        </div>
+    </div>
 }
+
+<div class="modal" tabindex="-1" style="display:@(showDeliveryModal ? "block" : "none")">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalle de la Entrega</h5>
+                <button type="button" class="btn-close" @onclick="CloseDeliveryModal"></button>
+            </div>
+            <div class="modal-body">
+                @if (deliveryDetails != null)
+                {
+                    <p>Dirección: @deliveryDetails.direccion</p>
+                    <p>RUT: @deliveryDetails.rut</p>
+                    <p>ID de la Orden: @deliveryDetails.idOrden</p>
+                <p>Imagen: <img src="@deliveryDetails.imageUrl" alt="Imagen de la entrega" style="width: 400px; height: auto;" /></p>                    <p>Fecha: @deliveryDetails.fecha</p>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" @onclick="CloseDeliveryModal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" style="display:@(showRejectionModal ? "block" : "none")">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalle del Rechazo</h5>
+                <button type="button" class="btn-close" @onclick="CloseRejectionModal"></button>
+            </div>
+            <div class="modal-body">
+                @if (rejectionDetails != null)
+                {
+                <p>Motivo: @rejectionDetails.motivo</p>
+                <p>Fecha: @rejectionDetails.fecha</p>
+                <p>ID de la Orden: @rejectionDetails.idOrden</p>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" @onclick="CloseRejectionModal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 @code {
 
-private List<OrdenDeCompra> facturas = new List<OrdenDeCompra>();
+    private List<OrdenDeCompra> facturas = new List<OrdenDeCompra>();
+    private DeliveryDetails deliveryDetails;
+    private bool showDeliveryModal = false;
 
-protected override async Task OnInitializedAsync()
-{
-await LoadFacturas();
-}
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadFacturas();
+    }
+    
+    private async Task GetDeliveryDetailsAsync(string orderId)
+    {
+        deliveryDetails = await JSRuntime.InvokeAsync<DeliveryDetails>("getDeliveryDetails", orderId);
+        showDeliveryModal = true;
+    }
+    
+    private void CloseDeliveryModal()
+    {
+        showDeliveryModal = false;
+    }
+    
+    private HistorialRechazo rejectionDetails;
+    private bool showRejectionModal = false;
 
-private async Task UpdateOrderStatusAsync(string orderId, string newStatus)
-{
-Console.WriteLine($"Updating order {orderId} to status {newStatus}");
-if (newStatus == "Rechazado")
-{
-await JSRuntime.InvokeVoidAsync("updateOrderStatusWithSetDoc", orderId, newStatus);
-}
-else if (newStatus == "Entregado")
-{
-await JSRuntime.InvokeVoidAsync("updateOrderStatusWithDelivery", orderId, newStatus);
-}
-await LoadFacturas(); // Recargar las facturas después de cambiar el estado
-}
+    private async Task GetRejectionDetailsAsync(string orderId)
+    {
+        rejectionDetails = await JSRuntime.InvokeAsync<HistorialRechazo>("getHistorialRechazos", orderId);
+        showRejectionModal = true;
+    }
 
-private async Task LoadFacturas()
-{
-var userId = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userId");
-facturas = await JSRuntime.InvokeAsync<List<OrdenDeCompra>>("getUserOrders", userId);
-}
+    private void CloseRejectionModal()
+    {
+        showRejectionModal = false;
+    }
+
+    private async Task UpdateOrderStatusAsync(string orderId, string newStatus)
+    {
+        Console.WriteLine($"Updating order {orderId} to status {newStatus}");
+        if (newStatus == "Rechazado")
+        {
+            await JSRuntime.InvokeVoidAsync("updateOrderStatusWithSetDoc", orderId, newStatus);
+        }
+        else if (newStatus == "Entregado")
+        {
+            await JSRuntime.InvokeVoidAsync("updateOrderStatusWithDelivery", orderId, newStatus);
+        }
+        await LoadFacturas(); // Recargar las facturas después de cambiar el estado
+    }
+
+    private async Task LoadFacturas()
+    {
+        var userId = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userId");
+        facturas = await JSRuntime.InvokeAsync<List<OrdenDeCompra>>("getUserOrders", userId);
+    }
 
 
-public class OrdenDeCompra
-{
-public string idOrden { get; set; }
-public string Nombre { get; set; } = "";
-public string Direccion { get; set; } = "";
-public string Telefono { get; set; } = "";
-public List<Productos> Items { get; set; } = new List<Productos>();
-public decimal Total { get; set; } = 0;
-public DateOnly Fecha { get; set; } = DateOnly.FromDateTime(DateTime.Now);
-public string estado { get; set; } = "";
-}
+    public class OrdenDeCompra
+    {
+        public string idOrden { get; set; }
+        public string Nombre { get; set; } = "";
+        public string Direccion { get; set; } = "";
+        public string Telefono { get; set; } = "";
+        public List<Productos> Items { get; set; } = new List<Productos>();
+        public decimal Total { get; set; } = 0;
+        public DateOnly Fecha { get; set; } = DateOnly.FromDateTime(DateTime.Now);
+        public string estado { get; set; } = "";
+    }
 
-public class Productos
-{
-public int Quantity { get; set; } = 1;
-public string NombreProducto { get; set; } = "";
-public decimal Cost { get; set; } = 0;
-public decimal Total { get; set; } = 0;
-}
+    public class Productos
+    {
+        public int Quantity { get; set; } = 1;
+        public string NombreProducto { get; set; } = "";
+        public decimal Cost { get; set; } = 0;
+        public decimal Total { get; set; } = 0;
+    }
+    
+    public class DeliveryDetails
+    {
+        public string direccion { get; set; }
+        public string rut { get; set; }
+        public string idOrden { get; set; }
+        public string imageUrl { get; set; }
+        public string fecha { get; set; }
+    }
+    
+    public class HistorialRechazo
+    {
+        public string motivo { get; set; }
+        public string fecha { get; set; }
+        public string idOrden { get; set; }
+    }
 
 }
