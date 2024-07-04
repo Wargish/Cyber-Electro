@@ -13,7 +13,7 @@
         <div class="row">
             <div class="col-sm-6">
                 <div class="col-sm-10">
-                    <label class="control-label col-sm-2">NombreClinte:</label>
+                    <label class="control-label col-sm-2">NombreCliente:</label>
                     <InputText class="form-control" id="nombre" @bind-Value="nombre"/>
                 </div>
                 <div class="col-sm-10">
@@ -233,6 +233,7 @@
         public DateOnly Fecha { get; set; } = DateOnly.FromDateTime(DateTime.Now);
     }
     
+
     public class Productos
     {
         public int Quantity { get; set; } = 1;

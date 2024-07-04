@@ -22,9 +22,12 @@ else
         <th>Teléfono</th>
         <th>Fecha</th>
         <th>Total</th>
+        <th>Facturas</th>
         <th>Detalle Productos</th>
         <th>Detalle Empresa</th>
-        <th>Facturas</th>
+        <th>PDF Facturas</th>
+        <th>EDITAR</th>
+        
     </tr>
     </thead>
     <tbody>
@@ -36,13 +39,17 @@ else
         <td>@order.Telefono</td>
         <td>@order.Fecha.ToString("dd/MM/yyyy")</td>
         <td>$@order.Total</td>
+        <td>@order.Factura</td>
         <td><button class="btn btn-primary" @onclick="() => ShowDetail(order)">Detalle</button></td>
         <td><button class="btn btn-secondary" @onclick="() => ShowEmpresa(order)">Empresa</button></td>
         <td><button class="btn btn-info" @onclick="() => DescargarPDF(order.idOrden)">DescargarFactura</button></td>
-    </tr>
-    }
+        <td><button class="btn btn-info" @onclick='() => NavigationManager.NavigateTo($"/editar-orden/{order.idOrden}")'>EDITAR</button></td>
+     </tr>
+     }
     </tbody>
+    
 </table>
+
 }
 
 <!-- Modal -->
@@ -146,6 +153,8 @@ else
         selectedEmpresa = await JSRuntime.InvokeAsync<Empresa>("getEmpresa", order.idOrden);
     }
 
+
+ 
     private void CloseEmpresaModal()
     {
         selectedEmpresa = null;
@@ -168,6 +177,8 @@ else
         public List<Productos> Items { get; set; } // Add this line
         public decimal Total { get; set; }
         public DateOnly Fecha { get; set; } = DateOnly.FromDateTime(DateTime.Now);
+
+        public string Factura { get; set; }
     }
     
     public class Productos
