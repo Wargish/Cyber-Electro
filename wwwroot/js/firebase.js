@@ -21,6 +21,22 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
+
+export async function registerUser(email, password) {
+    try {
+        const auth = getAuth();
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        return user.uid; // Devuelve el ID del usuario
+    } catch (error) {
+        console.error("Error registering user: ", error);
+    }
+}
+
+window.registerUser = registerUser;
+
+
 async function descargarPDF(ordenDeCompraId) {
     // Asegúrate de usar la referencia de storage correcta importada de Firebase
     const storageRef = getStorage(app);
@@ -39,6 +55,9 @@ async function descargarPDF(ordenDeCompraId) {
 }
 
 window.descargarPDF = descargarPDF;
+
+
+
 
 
 export async function saveAdditionalData(uid, nombre, direccion, telefono, email, password) {
@@ -102,7 +121,56 @@ export async function getAdditionalData(uid) {
 
 window.getAdditionalData = getAdditionalData;
 
-async function saveOrder(order,datosEmpresas,DatosProductosString) {
+
+async function getdataempresas(idOrden) {
+    try {
+        // Referencia a la colección 'empresas'
+        const empresasRef = collection(db, 'empresas');
+
+        // Crear una consulta para obtener documentos donde 'orderId' sea igual a 'idOrden'
+        const q = query(empresasRef, where('orderId', '==', idOrden));
+
+        // Ejecutar la consulta
+        const querySnapshot = await getDocs(q);
+
+        // Verificar si hay resultados
+        if (!querySnapshot.empty) {
+            // Extraer y retornar los datos del primer documento encontrado
+            const empresaData = querySnapshot.docs[0].data();
+            return empresaData;
+        } else {
+            console.log("No matching documents found!");
+            return null;
+        }
+    } catch (error) {
+        console.error("Error getting documents: ", error);
+        return null;
+    }
+}
+
+window.getdataempresas = getdataempresas;
+
+
+
+
+export async function getDataDeOrdenes(idOrden) {
+    try {
+        const docRef = doc(db, 'ordenes', idOrden);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            return docSnap.data();
+        } else {
+            console.log("No such document!");
+        }
+    } catch (error) {
+        console.error("Error getting document: ", error);
+    }
+}
+
+window.getDataDeOrdenes = getDataDeOrdenes;
+
+async function saveOrder(order, datosEmpresas, DatosProductosString) {
     try {
         const userId = await getUserId();
         if (order && userId) {
@@ -111,10 +179,13 @@ async function saveOrder(order,datosEmpresas,DatosProductosString) {
             const docRef = await addDoc(ordersCollection, order);
             order.estado = "Por Entregar"; // o cualquier valor inicial que desees
 
-
             order.idOrden = docRef.id;
-            await generarYGuardarPDF(order,datosEmpresas,DatosProductosString);
-            await setDoc(docRef, order);
+            await generarYGuardarPDF(order, datosEmpresas, DatosProductosString);
+
+            // Añadir el campo "factura" con el valor "creada"
+            order.factura = "creada";
+
+            await setDoc(docRef, order, { merge: true });
             return docRef.id;
 
         } else {
@@ -159,7 +230,7 @@ async function generarYGuardarPDF(orden, datosEmpresas, DatosProductosString) {
                             [{ text: 'Datos del Cliente', colSpan: 2, style: 'subheader', fillColor: '#ffff00' }, {}],
                             [{ text: 'Cliente:', fillColor: '#FFFF7F' }, `${orden.nombre}`],
                             [{ text: 'Fecha:', fillColor: '#FFFF7F' }, `${orden.fecha}`],
-                            [{ text: 'Email:', fillColor: '#FFFF7F' }, `${orden.direccion}`],
+                            [{ text: 'Direccion:', fillColor: '#FFFF7F' }, `${orden.direccion}`],
                         ]
                     },
                     layout: {
@@ -263,9 +334,9 @@ async function generarYGuardarPDF(orden, datosEmpresas, DatosProductosString) {
                 },
                 {
                     columns: [
-                        { text: `Subtotal: $${subtotal.toFixed(2)}`, alignment: 'right', width: '*', fontSize: 14, bold: true, margin: [0, 10], color: '#333' },
-                        { text: `IVA (19%): $${iva.toFixed(2)}`, alignment: 'right', width: '*', fontSize: 14, bold: true, margin: [0, 10], color: '#333' },
-                        { text: `Total: $${orden.total.toFixed(2)}`, alignment: 'right', width: '*', fontSize: 16, bold: true, margin: [0, 10], color: '#333' }
+                        { text: `Subtotal: $${subtotal.toFixed(2)}`, alignment: 'right', width: '*', fontSize: 10, bold: true, margin: [0, 10], color: '#333' },
+                        { text: `IVA (19%): $${iva.toFixed(2)}`, alignment: 'right', width: '*', fontSize: 10, bold: true, margin: [0, 10], color: '#333' },
+                        { text: `Total: $${orden.total.toFixed(2)}`, alignment: 'right', width: '*', fontSize: 10, bold: true, margin: [0, 10], color: '#333' }
                     ],
                     margin: [0, 10]
                 }
@@ -524,6 +595,31 @@ async function getEmpresa(orderId) {
 
 window.getEmpresa = getEmpresa;
 
+
+
+async function getOrdenes(orderId) {
+    try {
+        // Get a reference to the empresas collection
+        const empresasCollection = collection(db, 'ordenes');
+
+        // Create a query against the collection
+        const q = query(empresasCollection, where("orderId", "==", orderId));
+
+        // Get all documents that match the query
+        const querySnapshot = await getDocs(q);
+
+        // Map each document to its data
+        const empresas = querySnapshot.docs.map(doc => doc.data());
+
+        // Return the first empresa (there should only be one)
+        return empresas[0];
+    } catch (error) {
+        console.error("Error getting ordenes: ", error);
+    }
+}
+
+window.getOrdenes = getOrdenes;
+
 export async function logoutUser() {
     const auth = getAuth();
     try {
@@ -574,6 +670,54 @@ window.getHistorialRechazos = async function (orderId) {
         console.error("Error getting historial de rechazos: ", error);
     }
 }
+
+async function actualizarOrdenEnFirebase(idOrden, datosOrden) {
+    const ordenRef = doc(db, 'ordenes', idOrden);
+    try {
+        await updateDoc(ordenRef, datosOrden);
+        window.location.href = '/home';
+        console.log("Orden actualizada con éxito");
+    } catch (error) {
+        console.error("Error actualizando la orden: ", error);
+    }
+}
+
+window.actualizarOrdenEnFirebase = actualizarOrdenEnFirebase;
+
+// Función para llamar desde Razor para obtener un array "items" de una orden específica por 'idOrden' en Firebase
+async function getItemsFromOrdenById(idOrden) {
+    try {
+        // Referencia a la colección 'ordenes'
+        const ordenesRef = collection(db, 'empresas');
+
+        // Crear una consulta para obtener el documento específico por 'idOrden'
+        const q = query(ordenesRef, where("orderId", "==", idOrden));
+
+        // Ejecutar la consulta
+        const querySnapshot = await getDocs(q);
+
+        // Inicializar un array para almacenar los items de la orden específica
+        let itemsArray = [];
+
+        // Iterar sobre cada documento resultante (debería ser uno solo)
+        querySnapshot.forEach((doc) => {
+            // Verificar si el documento tiene un campo 'items'
+            if (doc.data().items) {
+                // Asignar los items del documento a 'itemsArray'
+                itemsArray = doc.data().items;
+            }
+        });
+
+        // Retornar el array 'itemsArray' con los items de la orden específica
+        return itemsArray;
+    } catch (error) {
+        console.error("Error getting items from orden by id: ", error);
+        return [];
+    }
+}
+
+window.getItemsFromOrdenById = getItemsFromOrdenById;
+
 
 window.logoutUser = logoutUser;
 
