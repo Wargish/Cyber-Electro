@@ -15,6 +15,7 @@
                 <option value="">Selecciona un estado</option>
                 <option value="Entregado">Entregado</option>
                 <option value="Rechazado">Rechazado</option>
+                <option value="Anulado">Anulado</option>
             </select>
             @if (factura.estado == "Entregado")
             {
@@ -24,6 +25,11 @@
             {
                 <button class="btn btn-primary mt-2" @onclick="() => GetRejectionDetailsAsync(factura.idOrden)">Mostrar Detalles de Rechazo</button>
             }
+            @if (factura.estado == "Anulado")
+            {
+                <button class="btn btn-primary mt-2" @onclick="() => GetRejectionDetailsAsync(factura.idOrden)">Mostrar Detalles de Rechazo</button>
+            }
+            
         </div>
     </div>
 }
@@ -120,6 +126,9 @@
         else if (newStatus == "Entregado")
         {
             await JSRuntime.InvokeVoidAsync("updateOrderStatusWithDelivery", orderId, newStatus);
+        }else if (newStatus == "Anulado")
+        {
+            await JSRuntime.InvokeVoidAsync("anuladooo", orderId, newStatus);
         }
         await LoadFacturas(); // Recargar las facturas después de cambiar el estado
     }

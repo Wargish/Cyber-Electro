@@ -1,9 +1,9 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
-import { getAuth, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword  } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-import { doc, setDoc, getDoc} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import { getAuth, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+import { doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import { getStorage } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js';
-import { addDoc, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import { addDoc, collection, query, where, getDocs, updateDoc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import { ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js';
 import { serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
@@ -21,6 +21,49 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
+
+export async function actualizarOrdenFirestore(idOrden, orden) {
+    try {
+        const ordenRef = doc(db, "ordenes", idOrden);
+        await updateDoc(ordenRef, orden);
+
+        console.log("Orden actualizada con éxito en Firestore");
+        return true;
+    } catch (error) {
+        console.error("Error al actualizar la orden en Firestore:", error);
+        return false;
+    }
+}
+
+window.actualizarOrdenFirestore = actualizarOrdenFirestore;
+
+
+export async function actualizarEmpresaFirestore(idOrden, empresa) {
+    try {
+        // Crea una consulta para encontrar el documento con el orderId específico
+        const empresasRef = collection(db, "empresas");
+        const q = query(empresasRef, where("orderId", "==", idOrden));
+
+        // Ejecuta la consulta
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+            // Suponiendo que solo esperas un documento que coincida, actualiza el primer documento encontrado
+            const documentToUpdate = querySnapshot.docs[0];
+            await updateDoc(documentToUpdate.ref, empresa);
+            console.log("Empresa actualizada con éxito en Firestore");
+            return true;
+        } else {
+            console.log("No se encontró un documento con el orderId proporcionado.");
+            return false;
+        }
+    } catch (error) {
+        console.error("Error al actualizar la Empresa en Firestore:", error);
+        return false;
+    }
+}
+
+window.actualizarEmpresaFirestore = actualizarEmpresaFirestore;
 
 export async function registerUser(email, password) {
     try {
@@ -69,7 +112,7 @@ export async function saveAdditionalData(uid, nombre, direccion, telefono, email
             direccion: direccion,
             telefono: telefono,
             email: email,
-            password : password
+            password: password
         });
     } catch (error) {
         console.error("Error saving additional data: ", error);
@@ -435,10 +478,34 @@ export async function getUserOrders(userId) {
 window.getUserOrders = getUserOrders;
 
 
-window.updateOrderStatusWithSetDoc = async function(orderId, newStatus) {
+export async function NIcoDios(idOrden) {
+    try {
+        // Get a reference to the orders collection
+        const orderssCollection = collection(db, 'ordenes');
+
+        // Create a query against the collection
+        const a = query(orderssCollection, where("idOrden", "==", idOrden));
+
+        // Get all documents that match the query
+        const querySnapshots = await getDocs(a);
+
+        // Map each document to its data
+        const orderss = querySnapshots.docs.map(doc => doc.data());
+
+        // Return the list of orders
+        return orderss;
+    } catch (error) {
+        console.error("Error getting user orders: ", error);
+    }
+}
+
+window.NIcoDios = NIcoDios;
+
+
+window.updateOrderStatusWithSetDoc = async function (orderId, newStatus) {
     console.log(`updateOrderStatusWithSetDoc called with orderId: ${orderId}, newStatus: ${newStatus}`);
     try {
-        const {value: formValues} = await Swal.fire({
+        const { value: formValues } = await Swal.fire({
             title: "Escriba el Motivo del Rechazo",
             html:
                 '<input id="swal-input1" class="swal2-input" placeholder="Motivo del Rechazo">',
@@ -455,7 +522,7 @@ window.updateOrderStatusWithSetDoc = async function(orderId, newStatus) {
         if (formValues) {
             const [motivoRechazo] = formValues;
             const orderRef = doc(db, 'ordenes', orderId);
-            await setDoc(orderRef, {estado: newStatus, motivoRechazo: motivoRechazo}, {merge: true});
+            await setDoc(orderRef, { estado: newStatus, motivoRechazo: motivoRechazo }, { merge: true });
             console.log(`Order ${orderId} updated to status ${newStatus} with reason ${motivoRechazo}`);
 
             if (newStatus === "Rechazado") {
@@ -467,13 +534,108 @@ window.updateOrderStatusWithSetDoc = async function(orderId, newStatus) {
     } catch (error) {
         console.error("Error updating order status: ", error);
     }
+
+
+}
+
+
+
+window.anuladooo = async function (orderId, newStatus) {
+    console.log(`anuladooo called with orderId: ${orderId}, newStatus: ${newStatus}`);
+    try {
+        const { value: formValues } = await Swal.fire({
+            title: "Escriba el Motivo del Rechazo",
+            html:
+                '<input id="swal-input1" class="swal2-input" placeholder="Motivo del Rechazo">',
+            focusConfirm: false,
+            preConfirm: () => {
+                return [
+                    document.getElementById('swal-input1').value,
+                ];
+            },
+            showCancelButton: true,
+            cancelButtonText: 'Cancel',
+            confirmButtonText: 'Submit',
+        });
+        if (formValues) {
+            const [motivoRechazo] = formValues;
+            const orderRef = doc(db, 'ordenes', orderId);
+            await setDoc(orderRef, { estado: newStatus, motivoRechazo: motivoRechazo }, { merge: true });
+            console.log(`Order ${orderId} updated to status ${newStatus} with reason ${motivoRechazo}`);
+
+            if (newStatus === "Rechazado") {
+                await handleRejectedOrder(orderId, motivoRechazo);
+            } else {
+                console.log(`No additional processing required for status ${newStatus}`);
+            }
+        }
+    } catch (error) {
+        console.error("Error updating order status: ", error);
+    }
+
+    
+    try {
+        // Paso 1: Obtener los datos de la orden desde Firestore
+        const ordenDoc = await getDoc(doc(db, "ordenes", orderId));
+        if (!ordenDoc.exists()) {
+            console.log("No se encontró la orden!");
+            return;
+        }
+        const orden = ordenDoc.data();
+
+        // Paso 2: Obtener los datos de la empresa vinculada a la orden
+        const empresasRef = collection(db, "empresas");
+        const q = query(empresasRef, where("orderId", "==", orderId));
+        const querySnapshot = await getDocs(q);
+        let datosEmpresas = {};
+
+        if (!querySnapshot.empty) {
+            datosEmpresas = querySnapshot.docs[0].data();
+        } else {
+            console.log("No se encontró la empresa con el OrderId especificado!");
+        }
+
+        // Paso 3: Convertir los items de la orden en una cadena de texto
+        let datosProductosString = orden.items.map(item => {
+            // Proporcionar valores predeterminados en caso de que las propiedades estén indefinidas
+            const cantidad = item.quantity || 0;
+            const nombre = item.nombreProducto || 'Desconocido';
+            const precio = item.cost || 0;
+            const total = item.total || (cantidad * precio);
+            
+            return `Cantidad: ${cantidad}, Nombre: ${nombre}, Precio: ${precio}, Total: ${total}`;
+        }).join('\n');
+
+        // Paso 4: Verificar si el PDF ya existe en Firebase Storage y eliminarlo si es necesario
+        const fileName = `order-${orderId}.pdf`;
+        const fileRef = ref(storage, 'ordenes/' + fileName);
+        try {
+            await deleteObject(fileRef); // Intenta eliminar el archivo si existe
+            console.log(`PDF existente eliminado: ${fileName}`);
+        } catch (error) {
+            console.log(`No existe un PDF previo o error al eliminar: ${error}`);
+        }
+
+        // Paso 5: Generar el PDF con la función generadora
+        await generarpdfAnulado(orden, datosEmpresas, datosProductosString);
+
+        // Paso 6: Actualizar el campo 'factura' de la orden en Firestore a 'RECTIFICADA'
+        await updateDoc(doc(db, "ordenes", orderId), {
+            factura: "RECTIFICADA"
+        });
+        console.log("Campo 'factura' actualizado a 'RECTIFICADA'");
+
+    } catch (error) {
+        console.error("Error actualizando o guardando el PDF: ", error);
+    }
+
 }
 
 window.updateOrderStatusWithDelivery = async function (orderId, newStatus) {
     let imageUrl = null
     console.log(`updateOrderStatusWithDelivery called with orderId: ${orderId}, newStatus: ${newStatus}`);
     try {
-        const {value: formValues} = await Swal.fire({
+        const { value: formValues } = await Swal.fire({
             title: "Ingresa tu Direccion y RUT",
             html:
                 '<input id="swal-input1" class="swal2-input" placeholder="Direccion">' +
@@ -493,7 +655,7 @@ window.updateOrderStatusWithDelivery = async function (orderId, newStatus) {
         if (formValues) {
             const [direccion, rut] = formValues;
             const orderRef = doc(db, 'ordenes', orderId);
-            await setDoc(orderRef, {estado: newStatus}, {merge: true});
+            await setDoc(orderRef, { estado: newStatus }, { merge: true });
             console.log(`Order ${orderId} updated to status ${newStatus}`);
 
             const { value: file } = await Swal.fire({
@@ -513,7 +675,7 @@ window.updateOrderStatusWithDelivery = async function (orderId, newStatus) {
             }
 
             if (newStatus === "Entregado") {
-                await handleDeliveredOrder(orderId, direccion, rut,imageUrl);
+                await handleDeliveredOrder(orderId, direccion, rut, imageUrl);
             } else {
                 console.log(`No additional processing required for status ${newStatus}`);
             }
@@ -533,7 +695,7 @@ async function handleRejectedOrder(orderId, motivoRechazo) {
         await setDoc(doc(db, 'historialRechazos', existingRechazo.id), {
             motivo: motivoRechazo,
             fecha: new Date().toISOString()
-        }, {merge: true});
+        }, { merge: true });
         console.log(`Rechazo actualizado en el historial para la orden ${orderId}`);
     } else {
         await addDoc(historialRechazosCollection, {
@@ -545,7 +707,7 @@ async function handleRejectedOrder(orderId, motivoRechazo) {
     }
 }
 
-async function handleDeliveredOrder(orderId, direccion, rut,imageUrl) {
+async function handleDeliveredOrder(orderId, direccion, rut, imageUrl) {
     const entregasCollection = collection(db, 'entregas');
     const q = query(entregasCollection, where("idOrden", "==", orderId));
     const querySnapshot = await getDocs(q);
@@ -558,7 +720,7 @@ async function handleDeliveredOrder(orderId, direccion, rut,imageUrl) {
             idOrden: orderId,
             imageUrl: imageUrl, // Guarda la URL de la imagen en la base de datos
             fecha: new Date().toISOString()
-        }, {merge: true});
+        }, { merge: true });
         console.log(`Entrega actualizado en el historial para la orden ${orderId}`);
     } else {
         await addDoc(entregasCollection, {
@@ -746,3 +908,272 @@ window.alertaLogin = function (message) {
         icon: 'success',
     });
 }
+
+async function actualizarYGuardarPDF(idOrden) {
+    try {
+        // Paso 1: Obtener los datos de la orden desde Firestore
+        const ordenDoc = await getDoc(doc(db, "ordenes", idOrden));
+        if (!ordenDoc.exists()) {
+            console.log("No se encontró la orden!");
+            return;
+        }
+        const orden = ordenDoc.data();
+
+        // Paso 2: Obtener los datos de la empresa vinculada a la orden
+        const empresasRef = collection(db, "empresas");
+        const q = query(empresasRef, where("orderId", "==", idOrden));
+        const querySnapshot = await getDocs(q);
+        let datosEmpresas = {};
+
+        if (!querySnapshot.empty) {
+            datosEmpresas = querySnapshot.docs[0].data();
+        } else {
+            console.log("No se encontró la empresa con el OrderId especificado!");
+        }
+
+        // Paso 3: Convertir los items de la orden en una cadena de texto
+        let datosProductosString = orden.items.map(item => {
+            // Proporcionar valores predeterminados en caso de que las propiedades estén indefinidas
+            const cantidad = item.quantity || 0;
+            const nombre = item.nombreProducto || 'Desconocido';
+            const precio = item.cost || 0;
+            const total = item.total || (cantidad * precio);
+            
+            return `Cantidad: ${cantidad}, Nombre: ${nombre}, Precio: ${precio}, Total: ${total}`;
+        }).join('\n');
+
+        // Paso 4: Verificar si el PDF ya existe en Firebase Storage y eliminarlo si es necesario
+        const fileName = `order-${idOrden}.pdf`;
+        const fileRef = ref(storage, 'ordenes/' + fileName);
+        try {
+            await deleteObject(fileRef); // Intenta eliminar el archivo si existe
+            console.log(`PDF existente eliminado: ${fileName}`);
+        } catch (error) {
+            console.log(`No existe un PDF previo o error al eliminar: ${error}`);
+        }
+
+        // Paso 5: Generar el PDF con la función generadora
+        await generarYGuardarPDF(orden, datosEmpresas, datosProductosString);
+
+        // Paso 6: Actualizar el campo 'factura' de la orden en Firestore a 'RECTIFICADA'
+        await updateDoc(doc(db, "ordenes", idOrden), {
+            factura: "RECTIFICADA"
+        });
+        console.log("Campo 'factura' actualizado a 'RECTIFICADA'");
+
+    } catch (error) {
+        console.error("Error actualizando o guardando el PDF: ", error);
+    }
+}
+
+window.actualizarYGuardarPDF = actualizarYGuardarPDF;
+
+
+
+
+
+
+
+async function generarpdfAnulado(orden, datosEmpresas, DatosProductosString) {
+    try {
+        const productLines = DatosProductosString.split('\n').filter(line => line.trim() !== '');
+        const productTableBody = productLines.map(line => {
+            const parts = line.split(',').map(part => part.split(':')[1].trim());
+            return parts;
+        });
+
+        const subtotal = orden.total / 1.19;
+        const iva = orden.total - subtotal;
+
+        // Define las fuentes
+        pdfMake.fonts = {
+            Arial: {
+                normal: 'http://localhost:5245/js/fonts/ARIAL.TTF',
+                bold: 'http://localhost:5245/js/fonts/ARIALBD.TTF',
+                italics: 'http://localhost:5245/js/fonts/ARIALI.TTF',
+                bolditalics: 'http://localhost:5245/js/fonts/ARIALBI.TTF'
+            }
+        };
+
+        const docDefinition = {
+            content: [
+                { text: 'FACTURA', style: 'header' },
+                { text: `Orden de Compra: ${orden.idOrden}`, style: 'subheader' },
+                {
+                    style: 'tableExample',
+                    table: {
+                        widths: [150, '*'],
+                        body: [
+                            [{ text: 'Datos del Cliente', colSpan: 2, style: 'subheader', fillColor: '#ffff00' }, {}],
+                            [{ text: 'Cliente:', fillColor: '#FFFF7F' }, `${orden.nombre}`],
+                            [{ text: 'Fecha:', fillColor: '#FFFF7F' }, `${orden.fecha}`],
+                            [{ text: 'Direccion:', fillColor: '#FFFF7F' }, `${orden.direccion}`],
+                        ]
+                    },
+                    layout: {
+                        fillColor: function (rowIndex, node, columnIndex) {
+                            return (rowIndex === 0 || rowIndex === node.table.body.length - 1) ? '#eeeeee' : null;
+                        },
+                        hLineWidth: function (i, node) {
+                            return (i === 0 || i === node.table.body.length) ? 2 : 0.5;
+                        },
+                        vLineWidth: function (i) {
+                            return 0.5;
+                        },
+                        hLineColor: function (i, node) {
+                            return (i === 0 || i === node.table.body.length) ? 'black' : 'gray';
+                        },
+                        vLineColor: function (i) {
+                            return 'black';
+                        },
+                        paddingLeft: function (i) {
+                            return i === 0 ? 4 : 4;
+                        },
+                        paddingRight: function (i, node) {
+                            return (i === node.table.widths.length - 1) ? 4 : 4;
+                        }
+                    },
+                    margin: [0, 20]
+                },
+                {
+                    style: 'tableExample',
+                    table: {
+                        widths: [150, '*'],
+                        body: [
+                            [{ text: 'Datos de la Empresa', colSpan: 2, style: 'subheader', fillColor: '#ffff00' }, {}],
+                            [{ text: 'Empresa:', fillColor: '#FFFF7F' }, `${datosEmpresas.nombreEmpresa}`],
+                            [{ text: 'RUT:', fillColor: '#FFFF7F' }, `${datosEmpresas.rutEmpresa}`],
+                            [{ text: 'Dirección:', fillColor: '#FFFF7F' }, `${datosEmpresas.direccionEmpresa}`],
+                            [{ text: 'Teléfono:', fillColor: '#FFFF7F' }, `${datosEmpresas.telefonoEmpresa}`]
+                        ]
+                    },
+                    layout: {
+                        fillColor: function (rowIndex, node, columnIndex) {
+                            return (rowIndex === 0 || rowIndex === node.table.body.length - 1) ? '#eeeeee' : null;
+                        },
+                        hLineWidth: function (i, node) {
+                            return (i === 0 || i === node.table.body.length) ? 2 : 0.5;
+                        },
+                        vLineWidth: function (i) {
+                            return 0.5;
+                        },
+                        hLineColor: function (i, node) {
+                            return (i === 0 || i === node.table.body.length) ? 'black' : 'gray';
+                        },
+                        vLineColor: function (i) {
+                            return 'black';
+                        },
+                        paddingLeft: function (i) {
+                            return i === 0 ? 4 : 4;
+                        },
+                        paddingRight: function (i, node) {
+                            return (i === node.table.widths.length - 1) ? 4 : 4;
+                        }
+                    },
+                    margin: [0, 20]
+                },
+                {
+                    style: 'tableExample',
+                    table: {
+                        headerRows: 1,
+                        widths: [70, '*', 100, 100],
+                        body: [
+                            ['Cantidad', 'Producto', 'Precio Unit.', 'Total'].map(header => ({ text: header, style: 'tableHeader', fillColor: '#ffff00' })),
+                            ...productTableBody.map(row => [
+                                row[0],
+                                row[1],
+                                { text: `$${row[2]}`, alignment: 'right' },
+                                { text: `$${row[3]}`, alignment: 'right' }
+                            ])
+                        ]
+                    },
+                    layout: {
+                        hLineWidth: function (i, node) {
+                            return (i === 0 || i === node.table.body.length) ? 2 : 0.5;
+                        },
+                        vLineWidth: function (i) {
+                            return 0.5;
+                        },
+                        hLineColor: function (i, node) {
+                            return (i === 0 || i === node.table.body.length) ? 'black' : 'gray';
+                        },
+                        vLineColor: function (i) {
+                            return 'black';
+                        },
+                        paddingLeft: function (i) {
+                            return i === 0 ? 4 : 4;
+                        },
+                        paddingRight: function (i, node) {
+                            return (i === node.table.widths.length - 1) ? 4 : 4;
+                        }
+                    },
+                    margin: [0, 20]
+                },
+                {
+                    columns: [
+                        { text: `Subtotal: $${subtotal.toFixed(2)}`, alignment: 'right', width: '*', fontSize: 10, bold: true, margin: [0, 10], color: '#333' },
+                        { text: `IVA (19%): $${iva.toFixed(2)}`, alignment: 'right', width: '*', fontSize: 10, bold: true, margin: [0, 10], color: '#333' },
+                        { text: `Total: $${orden.total.toFixed(2)}`, alignment: 'right', width: '*', fontSize: 10, bold: true, margin: [0, 10], color: '#333' }
+                    ],
+                    margin: [0, 10]
+                }
+            ],
+            styles: {
+                header: {
+                    fontSize: 18,
+                    bold: true,
+                    alignment: 'center',
+                    margin: [0, 0, 0, 10],
+                    color: '#000000'
+                },
+                subheader: {
+                    fontSize: 14,
+                    bold: true,
+                    alignment: 'left',
+                    margin: [0, 10, 0, 5],
+                    color: '#000000'
+                },
+                tableHeader: {
+                    bold: true,
+                    fontSize: 12,
+                    color: '#000000',
+                    fillColor: '#ffff00'
+                },
+                tableExample: {
+                    margin: [0, 5, 0, 15]
+                }
+            },
+            defaultStyle: {
+                font: 'Arial' // Especifica la fuente predeterminada aquí
+            },
+            background: [
+                {
+                    text: 'ANULADO',
+                    color: 'red',
+                    opacity: 0.3,
+                    bold: true,
+                    fontSize: 100,
+                    angle: 45,
+                    alignment: 'center',
+                    margin: [0, 300]
+                }
+            ]
+        };
+
+        // Genera el PDF utilizando pdfMake
+        const pdfDocGenerator = pdfMake.createPdf(docDefinition);
+
+        // Convierte el PDF en blob y súbelo a Firebase Storage
+        pdfDocGenerator.getBlob(async (blob) => {
+            const fileName = `order-${orden.idOrden}.pdf`;
+            const fileRef = ref(storage, 'ordenes/' + fileName);
+            await uploadBytes(fileRef, blob);
+            console.log(`PDF generado y guardado como ${fileName}`);
+        });
+
+    } catch (error) {
+        console.error("Error generando o guardando el PDF: ", error);
+    }
+}
+
+window.generarpdfAnulado = generarpdfAnulado;

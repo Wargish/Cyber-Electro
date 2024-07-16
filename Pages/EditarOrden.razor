@@ -4,51 +4,116 @@
 
 <h3>Editar Orden</h3>
 
-<!-- Formulario de edición -->
 @if (orden != null)
 {
     <div class="container">
-        <form class="form-horizontal">
-            <!-- Campos para editar la orden -->
-            <div class="row">
-                <div class="col-sm-6">
-                    <div class="col-sm-10">
-                        <label class="control-label col-sm-2">NombreCliente:</label>
-                        <InputText class="form-control" @bind-Value="orden.Nombre"/>
-                    </div>
-                    <div class="col-sm-10">
-                        <label class="control-label col-sm-2">Direccion:</label>
-                        <InputText class="form-control" @bind-Value="orden.Direccion"/>
-                    </div>
-                    <div class="col-sm-10">
-                        <label class="control-label col-sm-2">Telefono:</label>
-                        <InputText class="form-control" @bind-Value="orden.Telefono"/>
-                    </div>
-                    <div class="col-sm-10">
-                        <label class="control-label col-sm-2">NombreEmpresa:</label>
-                        <InputText class="form-control" @bind-Value="orden.NombreEmpresa" placeholder="NombreEmpresa"/>
-                    </div>
-                    <div class="col-sm-10">
-                        <label class="control-label col-sm-2">RutEmpresa:</label>
-                        <InputText class="form-control" @bind-Value="orden.RutEmpresa" placeholder="RutEmpresa"/>
-                    </div>
-                    <div class="col-sm-10">
-                        <label class="control-label col-sm-2">DireccionEmpresa:</label>
-                        <InputText class="form-control" @bind-Value="orden.DireccionEmpresa" placeholder="DireccionEmpresa"/>
-                    </div>
-                    <div class="col-sm-10">
-                        <label class="control-label col-sm-2">TelefonoEmpresa:</label>
-                        <InputText class="form-control" @bind-Value="orden.TelefonoEmpresa" placeholder="TelefonoEmpresa"/>
-                    </div>
-
-                    <button class="btn btn-primary" @onclick="ActualizarOrden">Actualizar Orden</button>
-                    <div class="row">
-    </div>
-                     
-                    
+        <div class="row">
+            <div class="col-sm-6">
+                <h4>Detalles de la Orden</h4>
+                <div class="form-group">
+                    <label for="nombre">Nombre:</label>
+                    <input id="nombre" type="text" @bind="orden.Nombre" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label for="direccion">Dirección:</label>
+                    <input id="direccion" type="text" @bind="orden.Direccion" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label for="telefono">Teléfono:</label>
+                    <input id="telefono" type="text" @bind="orden.Telefono" class="form-control" />
                 </div>
             </div>
-        </form>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                <h4>Detalles de la empresa</h4>
+                <div class="form-group">
+                    <label for="nombre">Nombre:</label>
+                    <input id="nombre" type="text" @bind="@empresa.NombreEmpresa" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label for="rut">Dirección:</label>
+                    <input id="rut" type="text" @bind="@empresa.RutEmpresa" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label for="direccion">Teléfono:</label>
+                    <input id="direccion" type="text" @bind="@empresa.DireccionEmpresa" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label for="telefono">Teléfono:</label>
+                    <input id="telefono" type="text" @bind="@empresa.TelefonoEmpresa" class="form-control" />
+                </div>
+            </div>
+        </div>
+
+
+        @if (orden.Items != null && orden.Items.Any())
+        {
+            <h4>Productos</h4>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Cantidad</th>
+                        <th>Nombre del producto</th>
+                        <th>Precio</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in orden.Items)
+                    {
+                        <tr>
+                            <td>
+                                <div class="form-group">
+                                    <label for="cantidad">Cantidad:</label>
+                                    <input id="cantidad" type="text" value="@item.Quantity"
+                                        @oninput="@(e => UpdateQuantity(item, e.Value.ToString()))" class="form-control" />
+
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    <label for="nombreProducto">Nombre del producto:</label>
+                                    <input id="nombreProducto" type="text" @bind="@item.NombreProducto" class="form-control" />
+
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    <label for="costo">Precio:</label>
+                                    <input id="costo" type="text" value="@item.Cost"
+                                        @oninput="@(e => UpdateCost(item, e.Value.ToString()))" class="form-control" />
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    <label for="Total">Total:</label>
+                                    <input id="Total" type="text" @bind="@item.Total" class="form-control" />
+                                </div>
+                            </td>
+
+                        </tr>
+                    }
+                </tbody>
+                <button class="btn btn-primary" @onclick="AddItem">Agregar Producto</button>
+                <button class="btn btn-success" @onclick="GuardarCambios">Guardar Cambios</button>
+            </table>
+            <div>
+                Subtotal Completo: @subtotalCompleto
+            </div>
+            <div>
+                IVA (19%): @tax
+            </div>
+            <div>
+                Total General: @total
+            </div>
+
+
+
+        }
+        else
+        {
+            <p>No hay productos disponibles.</p>
+        }
     </div>
 }
 else if (error != null)
@@ -61,61 +126,144 @@ else
 }
 
 @code {
-    // Propiedades para manejar la orden de compra
-    private OrdenDeCompra orden;
-    private Exception error;
 
     [Parameter]
     public string idOrden { get; set; }
 
+    private List<Productos> items = new List<Productos> { new Productos() };
+       private string ConvertItemsToString()
+{
+    var sb = new System.Text.StringBuilder();
+    foreach (var item in items)
+    {
+        sb.Append($"Cantidad: {item.Quantity}, Nombre: {item.NombreProducto}, Precio: {item.Cost}, Total: {item.Total}\n");
+    }
+    return sb.ToString();
+}
+
+    private decimal subtotalCompleto = 0;
+    private decimal tax = 0;
+    private decimal total = 0;
+
+
+    private void AddItem()
+    {
+        if (orden.Items == null)
+        {
+            orden.Items = new List<Productos>();
+        }
+        orden.Items.Add(new Productos());
+    }
+
+    private void UpdateQuantity(Productos item, string newQuantity)
+    {
+        if (decimal.TryParse(newQuantity, out var quantity))
+        {
+            item.Quantity = (int)quantity;
+            UpdateTotal(item);
+        }
+    }
+
+    private void UpdateCost(Productos item, string newCost)
+    {
+        if (decimal.TryParse(newCost, out var cost))
+        {
+            item.Cost = cost;
+            UpdateTotal(item);
+        }
+    }
+
+    private void UpdateTotal(Productos item)
+    {
+        item.Total = item.Quantity * item.Cost;
+        CalcularTotales();
+    }
+
+    private void CalcularTotales()
+    {
+        subtotalCompleto = orders.SelectMany(order => order.Items).Sum(item => item.Total);
+        tax = subtotalCompleto * 0.19m;
+        total = subtotalCompleto + tax;
+         orden.Total = total;
+    }
+
+  
+    
+
+    public List<OrdenDeCompra> orders;
+    public OrdenDeCompra orden;
+
+    public Exception error;
+
+    public Empresa empresa;
+
     protected override async Task OnInitializedAsync()
     {
-        try
+         try
         {
-            // Llamar al método para obtener la orden específica según idOrden
-            orden = await ObtenerOrdenAsync(idOrden);
+            
+            empresa = await JSRuntime.InvokeAsync<Empresa>("getdataempresas", idOrden);
+            orders = await JSRuntime.InvokeAsync<List<OrdenDeCompra>>("NIcoDios", idOrden);
+            orden = orders.FirstOrDefault(); // Tomamos la primera orden obtenida (si hay alguna)
+            
+            CalcularTotales();
         }
         catch (Exception ex)
         {
             error = ex;
+            Console.WriteLine($"Error al cargar datos: {ex.Message}");
         }
     }
 
-    // Método para obtener la orden específica
+    string nombreEmpresa = "";
+    string rutEmpresa = "";
+    string direccionEmpresa = "";
+    string telefonoEmpresa = "";
 
-   private async Task ActualizarOrden()
-{
-    var ordenActualizada = new Dictionary<string, object>
+
+
+
+
+
+    private async Task GuardarCambios()
     {
-        {"nombreEmpresa", orden.NombreEmpresa},
-        {"rutEmpresa", orden.RutEmpresa},
-        {"direccionEmpresa", orden.DireccionEmpresa},
-        {"telefonoEmpresa", orden.TelefonoEmpresa}
-    };
-
-    await JSRuntime.InvokeVoidAsync("actualizarOrdenEnFirebase", idOrden, ordenActualizada);
-}
 
 
-   private async Task<OrdenDeCompra> ObtenerOrdenAsync(string idOrden)
-{
-    var DataDeOrdenes = await JSRuntime.InvokeAsync<Dictionary<string, object>>("getDataDeOrdenes", idOrden);
-    var empresaData = await JSRuntime.InvokeAsync<Dictionary<string, object>>("getdataempresas", idOrden);
+        try
+        {
 
-    var orden = new OrdenDeCompra
-    {
-        Nombre = DataDeOrdenes.ContainsKey("nombre") ? DataDeOrdenes["nombre"].ToString() : "",
-        Direccion = DataDeOrdenes.ContainsKey("direccion") ? DataDeOrdenes["direccion"].ToString() : "",
-        Telefono = DataDeOrdenes.ContainsKey("telefono") ? DataDeOrdenes["telefono"].ToString() : "",
-        NombreEmpresa = empresaData != null && empresaData.ContainsKey("nombreEmpresa") ? empresaData["nombreEmpresa"].ToString() : "",
-        RutEmpresa = empresaData != null && empresaData.ContainsKey("rutEmpresa") ? empresaData["rutEmpresa"].ToString() : "",
-        DireccionEmpresa = empresaData != null && empresaData.ContainsKey("direccionEmpresa") ? empresaData["direccionEmpresa"].ToString() : "",
-        TelefonoEmpresa = empresaData != null && empresaData.ContainsKey("telefonoEmpresa") ? empresaData["telefonoEmpresa"].ToString() : ""
-    };
+            
 
-        return orden;
-    
-}
+            // Asegúrate de que 'orden' incluya el 'idOrden' o pásalo explícitamente como argumento
+            
+            bool resultado = await JSRuntime.InvokeAsync<bool>("actualizarOrdenFirestore", idOrden, orden);
+            if (resultado)
+            {
+                bool a = await JSRuntime.InvokeAsync<bool>("actualizarEmpresaFirestore", idOrden, empresa);
+                Console.WriteLine("Orden actualizada con éxito.");
+                if (a)
+                {
+                    Console.WriteLine("Empresa actualizada con éxito.");
+                    await JSRuntime.InvokeVoidAsync("actualizarYGuardarPDF", idOrden); 
+
+                }
+                else
+                {
+                    Console.WriteLine("Error al actualizar la Empresa.");
+                }
+            }
+
+
+            else
+            {
+                Console.WriteLine("Error al actualizar la orden.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al guardar cambios: {ex.Message}");
+        }
+    }
 
     // Clase OrdenDeCompra y otras clases relacionadas
     public class OrdenDeCompra
@@ -123,12 +271,14 @@ else
         public string Nombre { get; set; } = "";
         public string Direccion { get; set; } = "";
         public string Telefono { get; set; } = "";
-        public string NombreEmpresa { get; set; } = "";
-        public string RutEmpresa { get; set; } = "";
         public List<Productos> Items { get; set; } = new List<Productos>();
-        public string DireccionEmpresa { get; set; } = "";
-        public string TelefonoEmpresa { get; set; } = "";
+
+        public decimal Total { get; set; }
+
     }
+
+
+
     public class Productos
     {
         public int Quantity { get; set; } = 1;
@@ -136,6 +286,15 @@ else
         public decimal Cost { get; set; } = 0;
         public decimal Total { get; set; } = 0;
     }
+
+
+    public class Empresa
+    {
+        public string NombreEmpresa { get; set; } = "";
+        public string RutEmpresa { get; set; } = "";
+        public string DireccionEmpresa { get; set; } = "";
+        public string TelefonoEmpresa { get; set; } = "";
+    }
+
+
 }
-
-
