@@ -101,3 +101,57 @@ a, .btn-link {
 code {
     color: #c02d76;
 }
+
+.status-container {
+    display: flex;
+    flex-direction: row; /* Cambiado de column a row */
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    background-color: #f5f5f5; /* Add a background color */
+    width: 100%; /* Set a width */
+    margin: 0 auto; /* Center the container */
+}
+
+.status {
+    font-size: 18px;
+    margin-bottom: 10px;
+    margin-right: 10px; /* Agregado para agregar espacio a la derecha */
+    padding: 10px; /* Add padding */
+    border-radius: 5px; /* Add border radius */
+    width: 100%; /* Set a width */
+    text-align: center; /* Center the text */
+}
+
+.por-entregar {
+    color: #f0ad4e;
+    background-color: #fcf8e3; /* Add a background color */
+}
+
+.rechazado {
+    color: #d9534f;
+    background-color: #f2dede; /* Add a background color */
+}
+
+.entregado {
+    color: #5cb85c;
+    background-color: #dff0d8; /* Add a background color */
+}
+
+.anulada {
+    color: #999;
+    background-color: #f5f5f5; /* Add a background color */
+}
+
+.facturas-creadas {
+    color: #5bc0de;
+    background-color: #d9edf7; /* Add a background color */
+}
+
+.facturas-rectificadas {
+    color: #337ab7;
+    background-color: #d9edf7; /* Add a background color */
+}

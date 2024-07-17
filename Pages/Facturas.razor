@@ -11,12 +11,15 @@
         </div>
         <div class="card-body">
             <p class="mb-1"><strong>Estado:</strong> @factura.estado</p>
+            @if (factura.estado != "Rechazado" && factura.estado != "Anulado" && factura.estado != "Entregado")
+            {
             <select class="form-select" @onchange="@(e => UpdateOrderStatusAsync(factura.idOrden, e.Value.ToString()))">
                 <option value="">Selecciona un estado</option>
                 <option value="Entregado">Entregado</option>
                 <option value="Rechazado">Rechazado</option>
                 <option value="Anulado">Anulado</option>
             </select>
+            }
             @if (factura.estado == "Entregado")
             {
                 <button class="btn btn-primary mt-2" @onclick="() => GetDeliveryDetailsAsync(factura.idOrden)">Mostrar Detalles de Entrega</button>
